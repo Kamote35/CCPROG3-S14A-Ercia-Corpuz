@@ -9,7 +9,7 @@ public class PropertyBlock extends Block{
     public Player Owner;
 
 
-    // constructor 
+    // Constructors
     public PropertyBlock(String name, int blockNumber, String street, double price, double rentprice) {
         super(name, blockNumber);
         this.street = street;
@@ -18,7 +18,7 @@ public class PropertyBlock extends Block{
         this.Owner = null; // instantiates the owner to null
     }
 
-    // methods: overrides
+    // Override methods
     @Override
     public void landedOn(Player player, Game game) {
 
@@ -26,7 +26,7 @@ public class PropertyBlock extends Block{
 
         if (this.Owner == null) {
             System.out.println(playername + " has arrived in " + this.name + ". Would you like to buy the property " + this.street + "? (Y/N)");
-            System.out.println("Proerty Price: ₱" + this.price);
+            System.out.println("Proerty Price: Php" + this.price);
             Scanner sc = new Scanner(System.in);
             String input = sc.nextLine().trim().toUpperCase();
 
@@ -34,7 +34,7 @@ public class PropertyBlock extends Block{
                     System.out.println("This property has already been bought by " + this.Owner);
                     System.out.println("Rent Price: ₱" + this.rentprice);
                     player.updateCash(this.rentprice*-1);
-                    System.out.println(playername + " remaining cash: ₱" + player.getCash());   
+                    System.out.println(playername + " remaining cash: Php" + player.getCash());   
             }
             else if (this.Owner == null){
                 if (input.equals("Y")) {
@@ -43,7 +43,7 @@ public class PropertyBlock extends Block{
                         this.Owner = player;
                         player.updateOwnedProperties(this);
                         System.out.println(playername + " has bought " + this.street + " in " + this.name + "!");
-                        System.out.println(playername + " remaining cash: ₱" + player.getCash());
+                        System.out.println(playername + " remaining cash: Php" + player.getCash());
                         } else{
                             System.out.println(playername + "does not have enough cash!");
                         }
@@ -61,7 +61,7 @@ public class PropertyBlock extends Block{
     }
 
 
-    // methods: setters
+    // Setters
     public void setOwner(Player owner) {
         this.Owner = owner;
     }

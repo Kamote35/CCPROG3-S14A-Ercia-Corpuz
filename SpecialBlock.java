@@ -1,0 +1,93 @@
+import java.util.Random;
+
+public class SpecialBlock extends Block {
+    public String type;
+
+    public SpecialBlock(String name, int blockNumber, String type){
+        super(name, blockNumber);
+        this.type = type;
+    }
+
+    // Override methods
+    @Override
+    public void landedOn(Player player, Game game) { 
+
+        int rand = new Random().nextInt() % 3; // Simulates a dice roll (1-6)
+
+        switch(type) {
+            case "GO":
+                System.out.println(player.getName() + " has passed the GO block! + Php2,500");
+                player.updateCash(2500);
+                break;
+
+            case "Manila City Jail":
+                System.out.println(player.getName() + " has landed on Manila City Jail.");
+                System.out.println("Roll the dice thrice, if you roll a double, you can get out of jail.");
+                System.out.println("If you do not roll a double after three tries, you will have to pay Php 5,000 to get out of jail.");
+                // placeholder for function
+                break;
+
+            case "Manila Police District":
+                System.out.println(player.getName() + " has landed on Manila Police District.");
+                System.out.println("You have been arrested! You will be sent to Manila City Jail.");
+                player.updatePositionBlock(11); // Block 11 is the block number allocated for Manila City Jail in the Game board
+                break;
+            case "Meralco":
+                System.out.println(player.getName() + " has landed on Meralco.");
+                System.out.println("You have to pay Php 2,500 for your electric bill.");
+                player.updateCash(-2500);
+                break;
+
+            case "Maynilad":
+                System.out.println(player.getName() + " has landed on Maynilad.");
+                System.out.println("You have to pay Php 1,000 for your water bill.");
+                player.updateCash(-1000);
+                break;
+
+            case "Income Tax":
+                System.out.println(player.getName() + " has landed on Income Tax.");
+                System.out.println("You have to pay Php 7,500 for your income tax.");
+                player.updateCash(-7500);
+                break;
+
+            case "Real Property Tax":
+                System.out.println(player.getName() + " has landed on Real Property Tax.");
+                // function call to calculate property tax
+                System.out.println("You have to pay Php [placeholder] for your real property tax.");
+                break;
+
+            case "Internal Revenue Allotment":
+                System.out.println(player.getName() + " has landed on Internal Revenue Allotment.");
+                System.out.println("You have earned Php 5,000.");
+                player.updateCash(5000);
+                break;
+
+            // Railroad blocks
+            case "LRT1":
+            case "LRT2":
+            case "MRT3":
+            case "PNR":
+                System.out.println(player.getName() + " has landed on " + type + ".");
+                // For future implementation (Phase 2)
+                break;
+            
+            case "Chance":
+                switch (rand) {
+                    case 0:
+                        System.out.println(player.getName() + " has landed on Chance! You have been given Php 20,000.");
+                        player.updateCash(20000);
+                        break;
+                    case 1:
+                        System.out.println(player.getName() + " has landed on Chance! You have been given a free property.");
+                        // function call to give player a free property
+                        break;
+                    case 2:
+                        System.out.println(player.getName() + " has landed on Chance! Php 5,000 has been taken away from you.");
+                        player.updateCash(-5000);
+                        break;
+                }
+
+        }
+    }
+    
+}

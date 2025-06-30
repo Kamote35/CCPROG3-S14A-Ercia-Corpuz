@@ -1,28 +1,29 @@
 import java.util.ArrayList;
 
-
 public class Player {
 
-    // properties
+    // Constants
+    final public int max = 22;
+
+    // Properties
     final private String name;
     private double cash;
     private int playerLvl;
     private int positionBlock;
-    final int max = 22;
-    ArrayList<PropertyBlock> ownedProperties;
-    ArrayList <PropertyBlock> rentedProperties;
+    final private ArrayList<PropertyBlock> ownedProperties;
+    final private ArrayList<PropertyBlock> rentedProperties;
 
-    // constructor
+    // Constructors
     public Player(String name){
         this.name = name;
-        this.cash = 50000;
-        this.playerLvl = 1; // default level
-        this.positionBlock = 0; // starting position is block 0 (GO Block)
+        this.cash = 50000; // Starting cash of Php 50,000
+        this.playerLvl = 1; 
+        this.positionBlock = 1; // starting position is block 1 (GO Block)
         this.ownedProperties = new ArrayList<>();
         this.rentedProperties = new ArrayList<>();
     }
 
-    // methods: getters
+    // Getters
     public String getName() {
         return this.name;
     }
@@ -47,14 +48,15 @@ public class Player {
         return this.rentedProperties.size();
     }
 
-    public PropertyBlock[] getOwnedProperties() {
-        return this.ownedProperties.size();
+    public ArrayList<PropertyBlock> getOwnedProperties() {
+        return this.ownedProperties;
+    }
 
-    public PropertyBlock[] getRentedProperties() {
+    public ArrayList<PropertyBlock> getRentedProperties() {
         return this.rentedProperties;
     }
 
-    // methods: setters
+    // Setters
     public void updateCash(double amount) {
         this.cash += amount;
     }

@@ -1,11 +1,11 @@
 public abstract class Block {
 
-    // properties
+    // Properties
     protected String name;
     protected int blockNumber;
 
 
-    // constructor
+    // Constructors
     public Block(String name, int blockNumber) {
         this.name = name;
         this.blockNumber = blockNumber;
