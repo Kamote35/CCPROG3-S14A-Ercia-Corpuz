@@ -1,33 +1,34 @@
+import java.util.ArrayList;
+
+
 public class Player {
 
     // properties
-    private String name;
+    final private String name;
     private double cash;
     private int playerLvl;
     private int positionBlock;
-    private PropertyBlock[] ownedProperties;
-    private PropertyBlock[] rentedProperties; // we can use the length property of the array to determine the number of properties
     final int max = 22;
-    
+    ArrayList<PropertyBlock> ownedProperties;
+    ArrayList <PropertyBlock> rentedProperties;
+
     // constructor
     public Player(String name){
         this.name = name;
         this.cash = 50000;
-        this.ownedHouses = 0;
-        this.rentedHouses = 0;
         this.playerLvl = 1; // default level
         this.positionBlock = 0; // starting position is block 0 (GO Block)
-        this.ownedProperties = new PropertyBlock[max]; // set the size to 22
-        this.rentedProperties = new PropertyBlock[max]; // since that is the maximum number of properties in the game board
+        this.ownedProperties = new ArrayList<>();
+        this.rentedProperties = new ArrayList<>();
     }
 
     // methods: getters
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public double getCash() {
-        return cash;
+        return this.cash;
     }
 
     public int getPlayerLvl() {
@@ -38,20 +39,19 @@ public class Player {
         return positionBlock;
     }
 
-    public int getOwnedHouses() {
-        return this.ownedProperties.length;
+    public int getNumberOwnedProperties() {
+        return this.ownedProperties.size();
     }
 
-    public int getRentedHouses() {
-        return this.rentedProperties.length;
+    public int getNumberRentedProperties() {
+        return this.rentedProperties.size();
     }
 
     public PropertyBlock[] getOwnedProperties() {
-        return ownedProperties;
-    }
+        return this.ownedProperties.size();
 
     public PropertyBlock[] getRentedProperties() {
-        return rentedProperties;
+        return this.rentedProperties;
     }
 
     // methods: setters
@@ -62,17 +62,21 @@ public class Player {
         this.positionBlock = positionBlock;
     }
     public void updateOwnedProperties(PropertyBlock property) {
-        for (int i = 0; i < max; i++) {
-            if (ownedProperties[i] == null) {
-                ownedProperties[i] = property;
+        int i;
+        for (i = 0; i < max; i++) {
+            if (ownedProperties.get(i) == null) {
+                ownedProperties.set(i, property);
                 break;
             }
+        }
+        if (i == max) {
+            System.out.println(this.name + " already owns the maximum number of properties!");
         }
     }
     public void updateRentedProperties(PropertyBlock property) {
         for (int i = 0; i < max; i++) {
-            if (rentedProperties[i] == null) {
-                rentedProperties[i] = property;
+            if (rentedProperties.get(i) == null) {
+                rentedProperties.set(i, property);
                 break;
             }
         }

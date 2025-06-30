@@ -1,11 +1,12 @@
 import java.util.Scanner;
 
+
 public class PropertyBlock extends Block{
     // properties
-    private String street;
-    private double price;
-    private double rentprice;
-    private Player Owner;
+    final public String street;
+    final public double price;
+    final public double rentprice;
+    public Player Owner;
 
 
     // constructor 
@@ -17,6 +18,54 @@ public class PropertyBlock extends Block{
         this.Owner = null; // instantiates the owner to null
     }
 
+    // methods: overrides
+    @Override
+    public void landedOn(Player player, Game game) {
+
+        String playername = player.getName();
+
+        if (this.Owner == null) {
+            System.out.println(playername + " has arrived in " + this.name + ". Would you like to buy the property " + this.street + "? (Y/N)");
+            System.out.println("Proerty Price: ₱" + this.price);
+            Scanner sc = new Scanner(System.in);
+            String input = sc.nextLine().trim().toUpperCase();
+
+            if (this.Owner != player) {
+                    System.out.println("This property has already been bought by " + this.Owner);
+                    System.out.println("Rent Price: ₱" + this.rentprice);
+                    player.updateCash(this.rentprice*-1);
+                    System.out.println(playername + " remaining cash: ₱" + player.getCash());   
+            }
+            else if (this.Owner == null){
+                if (input.equals("Y")) {
+                    if (player.getCash() >= price) {
+                        player.updateCash(this.price*-1);
+                        this.Owner = player;
+                        player.updateOwnedProperties(this);
+                        System.out.println(playername + " has bought " + this.street + " in " + this.name + "!");
+                        System.out.println(playername + " remaining cash: ₱" + player.getCash());
+                        } else{
+                            System.out.println(playername + "does not have enough cash!");
+                        }
+                } else if (input.equals("N")) {
+                    System.out.println(playername + " has decided not to buy " + this.street + ".");
+                 } else {
+                System.out.println("Invalid input!");
+                }
+            }
+            
+                
+            }
+
+        }
+    }
+
+
+    // methods: setters
+    public void setOwner(Player owner) {
+        this.Owner = owner;
+    }
+
     // methods
     public boolean isOwned() {
         if (this.Owner != null) {
@@ -26,9 +75,6 @@ public class PropertyBlock extends Block{
         }
     }
 
-    public void setOwner(Player owner) {
-        this.Owner = owner;
-    }
 
 
 
