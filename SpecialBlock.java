@@ -87,6 +87,10 @@ public class SpecialBlock extends Block {
                         break;
                 }
 
+            case "Free Parking":
+                System.out.println(player.getName() + " has landed on Free Parking! You can rest here for a turn.");
+                break;
+
         }
     }
     
