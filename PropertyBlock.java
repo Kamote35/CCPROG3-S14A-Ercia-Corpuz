@@ -45,8 +45,7 @@ public class PropertyBlock extends Block{
             String input;
             Scanner sc = new Scanner(System.in);
             input = sc.nextLine().trim().toUpperCase();
-                System.out.println(playername + " entered: " + input);
-
+            System.out.println(playername + " entered: " + input);
 
             switch (input) {
                 case "Y":
