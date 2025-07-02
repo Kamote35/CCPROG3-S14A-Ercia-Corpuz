@@ -28,6 +28,22 @@ public class Game {
         board.add(new SpecialBlock("Chance", 8, "Chance"));
         board.add(new PropertyBlock("Downtown Manila (Binondo, Quiapo, San Nicolas, & Sta. Cruz)", "Ongping Street", 9, 15000.00, 2500.00));
         board.add(new PropertyBlock("Downtown Manila (Binondo, Quiapo, San Nicolas, & Sta. Cruz)", "Ongping Street", 10, 15000.00, 2500.00));
+
+        // Block 11 - 15
+        board.add(new SpecialBlock("Manila City Jail", 11, "Manila City Jail"));
+        board.add(new PropertyBlock("Old Manila (Tondo & Gagalangin)", "Abad Santos Aveneue", 12, 15000.00, 2500.00));
+        board.add(new SpecialBlock("Meralco", 13, "Meralco"));
+        board.add(new PropertyBlock("Old Manila (Tondo & Gagalangin)", "Abad Santos Aveneue", 14, 15000.00, 2500.00));
+        board.add(new PropertyBlock("Old Manila (Tondo & Gagalangin)", "Abad Santos Aveneue", 15, 15000.00, 2500.00));
+
+        // Block 16 - 20
+        board.add(new SpecialBlock("PNR", 16, "PNR"));
+        board.add(new PropertyBlock("University Belt (Sampaloc)", "Espana Boulevard", 17, 25000.00, 5000.00));
+        board.add(new SpecialBlock("Internal Revenue Allotmet", 18, "Internal Revenue Allotment"));
+        board.add(new PropertyBlock("University Belt (Sampaloc)", "Espana Boulevard", 19, 25000.00, 5000.00));
+        board.add(new PropertyBlock("University Belt (Sampaloc)", "Espana Boulevard", 20, 25000.00, 5000.00));
+
+
     }
 
     public void start() {
@@ -44,30 +60,31 @@ public class Game {
 
         while (!gameOver) {
             for (Player player : players) {
-                System.out.println("\n" + player.name + "'s turn. Cash: ₱" + player.getCash());
+                System.out.println("\n" + player.getName() + "'s turn. Cash: Php " + player.getCash());
 
                 int d1 = rollDice();
                 int d2 = rollDice();
                 int move = d1 + d2;
 
-                System.out.println("Rolled: " + d1 + " and " + d2 + " -> Move: " + move);
+                System.out.println("Rolled: a " + d1 + " and a " + d2 + " -> Move: " + move + " blocks");
 
 
                 player.updatePositionBlock(player.getPositionBlock() + move);
                 if (player.getPositionBlock() > board.size()) {
                     player.updatePositionBlock(player.getPositionBlock() % board.size());
-                    System.out.println(player.name + " passed GO! +₱2,500");
+                    System.out.println(player.getName() + " passed GO! + Php 2,500");
                     player.updateCash(2500);
                 }
 
                 Block block = board.get(player.getPositionBlock() - 1);
                 block.landedOn(player, this);
 
-                System.out.println(player.name + "'s cash: ₱" + player.getCash());
-                System.out.println(player.name + "'s net worth: ₱" + player.getNetWorth());
+                System.out.println(player.getName() + "'s cash: Php " + player.getCash());
+                System.out.println(player.getName() + "'s net worth: Php " + player.getNetWorth());
+                System.out.println(player.getName() + "'s position: " + player.getPositionBlock() + " (" + board.get(player.getPositionBlock() - 1).getName() + ")");
 
                 if (player.getCash() < 0) {
-                    System.out.println(player.name + " is bankrupt! Game over.");
+                    System.out.println(player.getName() + " is bankrupt! Game over.");
                     gameOver = true;
                     break;
                 }

@@ -24,40 +24,54 @@ public class PropertyBlock extends Block{
 
         String playername = player.getName();
 
-        if (this.Owner == null) {
-            System.out.println(playername + " has arrived in " + this.name + ". Would you like to buy the property " + this.street + "? (Y/N)");
-            System.out.println("Proerty Price: Php" + this.price);
-            Scanner sc = new Scanner(System.in);
-            String input = sc.nextLine().trim().toUpperCase();
+        if (this.Owner != null && this.Owner != player) {
+            System.out.println(playername + " has arrived in " + this.name + ". This property is owned by " + this.Owner.getName() + ".");
+            System.out.println("Rent Price: Php " + this.rentprice);
+            player.updateCash(this.rentprice * -1);
+            System.out.println(playername + " remaining cash: Php " + player.getCash());
+            this.Owner.updateCash(this.rentprice);
+            System.out.println(this.Owner.getName() + " has received rent of Php " + this.rentprice + " from " + playername);
+            
+        }
 
-            if (this.Owner != player) {
-                    System.out.println("This property has already been bought by " + this.Owner);
-                    System.out.println("Rent Price: ₱" + this.rentprice);
-                    player.updateCash(this.rentprice*-1);
-                    System.out.println(playername + " remaining cash: Php" + player.getCash());   
-            }
-            else if (this.Owner == null){
-                if (input.equals("Y")) {
+        else if (this.Owner == player) {
+            System.out.println(playername + " has arrived in " + this.name + ". You already own this property, " + this.street + ".");
+            System.out.println("You can collect rent from other players who land on this property.");
+        }
+
+        else if (this.Owner == null) {
+            System.out.println(playername + " has arrived in " + this.name + ". Would you like to buy the property " + this.street + "? (Y/N)");
+            System.out.println("Property Price: Php " + this.price);
+            String input;
+            Scanner sc = new Scanner(System.in);
+            input = sc.nextLine().trim().toUpperCase();
+                System.out.println(playername + " entered: " + input);
+
+
+            switch (input) {
+                case "Y":
                     if (player.getCash() >= price) {
-                        player.updateCash(this.price*-1);
+                        player.updateCash(this.price * -1);
                         this.Owner = player;
                         player.updateOwnedProperties(this);
                         System.out.println(playername + " has bought " + this.street + " in " + this.name + "!");
                         System.out.println(playername + " remaining cash: Php" + player.getCash());
-                        } else{
-                            System.out.println(playername + "does not have enough cash!");
-                        }
-                } else if (input.equals("N")) {
+                    } else {
+                        System.out.println(playername + " does not have enough cash!");
+                    }
+                    break;
+                case "N":
                     System.out.println(playername + " has decided not to buy " + this.street + ".");
-                 } else {
-                System.out.println("Invalid input!");
-                }
+                    break;
+                default:
+                    System.out.println("Invalid input!");
+                    break;
             }
+        }
             
                 
-            }
+    }
 
-        }
 
 
 

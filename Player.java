@@ -72,14 +72,15 @@ public class Player {
     }
 
     public void updateOwnedProperties(PropertyBlock property) {
-        int i;
-        for (i = 0; i < max; i++) {
-            if (ownedProperties.get(i) == null) {
-                ownedProperties.set(i, property);
-                break;
-            }
+
+        if (ownedProperties.isEmpty()) {
+            ownedProperties.add(property);
         }
-        if (i == max) {
+        
+        else if (ownedProperties.size() < max) {
+            ownedProperties.add(property);
+        }
+        else {
             System.out.println(this.name + " already owns the maximum number of properties!");
         }
     }

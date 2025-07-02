@@ -14,4 +14,8 @@ public abstract class Block {
 
     // methods
     public abstract void landedOn (Player player, Game game);
+
+    public String getName() {
+        return this.name;
+    }
 }
