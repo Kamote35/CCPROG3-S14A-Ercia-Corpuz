@@ -10,7 +10,7 @@ public class PropertyBlock extends Block{
 
 
     // Constructors
-    public PropertyBlock(String name, int blockNumber, String street, double price, double rentprice) {
+    public PropertyBlock(String name, String street, int blockNumber, double price, double rentprice) {
         super(name, blockNumber);
         this.street = street;
         this.price = price;
@@ -58,7 +58,7 @@ public class PropertyBlock extends Block{
             }
 
         }
-    }
+
 
 
     // Setters

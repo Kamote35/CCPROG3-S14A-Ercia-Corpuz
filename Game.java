@@ -15,14 +15,19 @@ public class Game {
     }
 
     public void initializeBoard() {
+        // Block 1 - Block 5
         board.add(new SpecialBlock("GO", 1, "GO"));
-        board.add(new PropertyBlock("Muralla Street", 2, 25000, 5000));
+        board.add(new PropertyBlock("Walled City Manila (Intramuros & Port Area)","Muralla Street", 2, 25000.00, 5000.00));
         board.add(new SpecialBlock("Internal Revenue Allotment", 3, "INTERNAL_REVENUE"));
-        board.add(new SpecialBlock("Income Tax", 4, "INCOME_TAX"));
-        board.add(new SpecialBlock("Meralco", 5, "MERALCO"));
-        board.add(new SpecialBlock("Maynilad", 6, "MAYNILAD"));
-        board.add(new SpecialBlock("Real Property Tax", 7, "REAL_PROPERTY_TAX"));
-        board.add(new SpecialBlock("Manila City Jail", 8, "JAIL"));
+        board.add(new PropertyBlock("Walled City Manila (Intramuros & Port Area)","Muralla Street", 4, 25000.00, 5000.00));
+        board.add(new SpecialBlock("Income Tax", 5, "INCOME_TAX"));
+
+        // Block 6 - Block 10
+        board.add(new SpecialBlock("LRT1", 6, "LRT1"));
+        board.add(new PropertyBlock("Downtown Manila (Binondo, Quiapo, San Nicolas, & Sta. Cruz)", "Ongping Street", 7, 15000.00, 2500.00));
+        board.add(new SpecialBlock("Chance", 8, "Chance"));
+        board.add(new PropertyBlock("Downtown Manila (Binondo, Quiapo, San Nicolas, & Sta. Cruz)", "Ongping Street", 9, 15000.00, 2500.00));
+        board.add(new PropertyBlock("Downtown Manila (Binondo, Quiapo, San Nicolas, & Sta. Cruz)", "Ongping Street", 10, 15000.00, 2500.00));
     }
 
     public void start() {
