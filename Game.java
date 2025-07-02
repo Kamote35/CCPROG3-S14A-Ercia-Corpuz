@@ -1,20 +1,23 @@
 import java.util.ArrayList;
-import java.util.Random; 
+import java.util.Random;
+import java.util.Scanner;
 
 public class Game {
     final public ArrayList<Player> players;
     final public ArrayList<Block> board;
     Random rand;
+    Scanner scanner; // Added scanner
 
     // constructors
     public Game() {
         players = new ArrayList<>();
         board = new ArrayList<>();
         rand = new Random();
+        scanner = new Scanner(System.in); // Initialized scanner
         initializeBoard();
     }
 
-    public void initializeBoard() {
+    private void initializeBoard() {
         // Block 1 - Block 5
         board.add(new SpecialBlock("GO", 1, "GO"));
         board.add(new PropertyBlock("Walled City Manila (Intramuros & Port Area)","Muralla Street", 2, 25000.00, 5000.00));
@@ -43,16 +46,43 @@ public class Game {
         board.add(new PropertyBlock("University Belt (Sampaloc)", "Espana Boulevard", 19, 25000.00, 5000.00));
         board.add(new PropertyBlock("University Belt (Sampaloc)", "Espana Boulevard", 20, 25000.00, 5000.00));
 
+        // Block 21 - 25
+        board.add(new SpecialBlock("Free Parking", 21, "Free Parking"));
+        board.add(new PropertyBlock("Residential Manila (Pandacan, Sta. Ana, & Sta. Mesa)", "Pedro Gil Street", 22, 12500.00, 1500.00));
+        board.add(new SpecialBlock("Chance", 23, "Chance"));
+        board.add(new PropertyBlock("Residential Manila (Pandacan, Sta. Ana, & Sta. Mesa)", "Pedro Gil Street", 24, 12500.00, 1500.00));
+        board.add(new PropertyBlock("Residential Manila (Pandacan, Sta. Ana, & Sta. Mesa)", "Pedro Gil Street", 25, 12500.00, 1500.00));
 
-    }
+        // Block 26 - 30
+        board.add(new SpecialBlock("LRT2", 26, "LRT2"));
+        board.add(new PropertyBlock("River South Manila (Paco, & San Andres)", "Paz Mendoza Guazon Street (Otis)", 27, 15000.00, 2500.00));
+        board.add(new PropertyBlock("River South Manila (Paco, & San Andres)", "Paz Mendoza Guazon Street (Otis)", 28, 15000.00, 2500.00));
+        board.add(new SpecialBlock("Manyilad", 29, "Maynilad"));
+        board.add(new PropertyBlock("River South Manila (Paco, & San Andres)", "Paz Mendoza Guazon Street (Otis)", 30, 15000.00, 2500.00));
+
+        // Block 31 - 35
+        board.add(new SpecialBlock("Manila Police District", 31, "Manila Police District"));
+        board.add(new PropertyBlock("Vibrant Manila (Malate)", "Taft Avenue", 32, 25000.00, 5000.00));
+        board.add(new PropertyBlock("Vibrant Manila (Malate)", "Taft Avenue", 33, 25000.00, 5000.00));
+        board.add(new SpecialBlock("Internal Revenue Allotment", 34, "Internal Revenue Allotment"));
+        board.add(new PropertyBlock("Vibrant Manila (Malate)", "Taft Avenue", 35, 25000.00, 5000.00));
+
+        // Block 36 - 40
+        board.add(new SpecialBlock("MRT3", 36, "MRT3"));
+        board.add(new SpecialBlock("Chance", 37, "Chance"));
+        board.add(new PropertyBlock("Cultural Manila (Ermita)", "United Nations Avenue", 38, 17500.00, 2125.00));
+        board.add(new SpecialBlock("Real Property Tax", 39, "Real Property Tax"));
+        board.add(new PropertyBlock("Cultural Manila (Ermita)", "United Nations Avenue", 40, 17500.00, 2125.00));
+    }    
 
     public void start() {
         System.out.println("Welcome to the game!");
-        System.out.println("Enter number of players (2-4):");
-        int num = Integer.parseInt(System.console().readLine());
+        System.out.print("Enter number of players (2-4): ");
+        int num = Integer.parseInt(scanner.nextLine());
+
         for (int i = 0; i < num; i++) {
             System.out.print("Enter name of Player " + (i + 1) + ": ");
-            String name = System.console().readLine();
+            String name = scanner.nextLine();
             players.add(new Player(name));
         }
 
@@ -60,14 +90,15 @@ public class Game {
 
         while (!gameOver) {
             for (Player player : players) {
-                System.out.println("\n" + player.getName() + "'s turn. Cash: Php " + player.getCash());
+                System.out.println("\nIt's " + player.getName() + "'s turn. Cash: Php " + player.getCash());
+                System.out.println("Press ENTER to roll the dice...");
+                scanner.nextLine(); // Wait for player to press Enter
 
                 int d1 = rollDice();
                 int d2 = rollDice();
                 int move = d1 + d2;
 
-                System.out.println("Rolled: a " + d1 + " and a " + d2 + " -> Move: " + move + " blocks");
-
+                System.out.println("Rolled: a " + d1 + " and a " + d2 + ".\nMove: " + move + " blocks.");
 
                 player.updatePositionBlock(player.getPositionBlock() + move);
                 if (player.getPositionBlock() > board.size()) {
@@ -93,6 +124,6 @@ public class Game {
     }
 
     public int rollDice() {
-        return rand.nextInt(6) + 1; // returns a number between 1 and 6
+        return rand.nextInt(6) + 1;
     }
 }
