@@ -44,7 +44,7 @@ public class Game {
 
         while (!gameOver) {
             for (Player player : players) {
-                System.out.println("\n" + player.name + "'s turn. Cash: ₱" + player.cash);
+                System.out.println("\n" + player.name + "'s turn. Cash: ₱" + player.getCash());
 
                 int d1 = rollDice();
                 int d2 = rollDice();
@@ -52,20 +52,21 @@ public class Game {
 
                 System.out.println("Rolled: " + d1 + " and " + d2 + " -> Move: " + move);
 
-                player.position += move;
-                if (player.position > board.size()) {
-                    player.position = player.position % board.size();
+
+                player.updatePositionBlock(player.getPositionBlock() + move);
+                if (player.getPositionBlock() > board.size()) {
+                    player.updatePositionBlock(player.getPositionBlock() % board.size());
                     System.out.println(player.name + " passed GO! +₱2,500");
-                    player.cash += 2500;
+                    player.updateCash(2500);
                 }
 
-                Block block = board.get(player.position - 1);
+                Block block = board.get(player.getPositionBlock() - 1);
                 block.landedOn(player, this);
 
-                System.out.println(player.name + "'s cash: ₱" + player.cash);
+                System.out.println(player.name + "'s cash: ₱" + player.getCash());
                 System.out.println(player.name + "'s net worth: ₱" + player.getNetWorth());
 
-                if (player.cash < 0) {
+                if (player.getCash() < 0) {
                     System.out.println(player.name + " is bankrupt! Game over.");
                     gameOver = true;
                     break;

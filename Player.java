@@ -12,6 +12,7 @@ public class Player {
     private int positionBlock;
     final private ArrayList<PropertyBlock> ownedProperties;
     final private ArrayList<PropertyBlock> rentedProperties;
+    private double netWorth;
 
     // Constructors
     public Player(String name){
@@ -21,6 +22,7 @@ public class Player {
         this.positionBlock = 1; // starting position is block 1 (GO Block)
         this.ownedProperties = new ArrayList<>();
         this.rentedProperties = new ArrayList<>();
+        this.netWorth = this.cash; 
     }
 
     // Getters
@@ -56,13 +58,19 @@ public class Player {
         return this.rentedProperties;
     }
 
+    public double getNetWorth() {
+        return this.netWorth;
+    }
+
     // Setters
     public void updateCash(double amount) {
         this.cash += amount;
     }
+
     public void updatePositionBlock(int positionBlock) {
         this.positionBlock = positionBlock;
     }
+
     public void updateOwnedProperties(PropertyBlock property) {
         int i;
         for (i = 0; i < max; i++) {
@@ -75,6 +83,7 @@ public class Player {
             System.out.println(this.name + " already owns the maximum number of properties!");
         }
     }
+
     public void updateRentedProperties(PropertyBlock property) {
         for (int i = 0; i < max; i++) {
             if (rentedProperties.get(i) == null) {
@@ -83,9 +92,18 @@ public class Player {
             }
         }
     }
+
     public void updatePlayerLvl() {
         this.playerLvl++;
     }
-    
+
+    public void updateNetWorth() {
+        this.netWorth = this.cash;
+        for (PropertyBlock property : ownedProperties) {
+            if (property != null) {
+                this.netWorth += property.price;
+            }
+        }
+    }
 
 }
