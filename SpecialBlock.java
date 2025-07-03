@@ -24,7 +24,8 @@ public class SpecialBlock extends Block {
                 System.out.println(player.getName() + " has landed on Manila City Jail.");
                 System.out.println("Roll the dice thrice, if you roll a double, you can get out of jail.");
                 System.out.println("If you do not roll a double after three tries, you will have to pay Php 5,000 to get out of jail.");
-                // placeholder for function
+                
+                specialBlockManilaCityJail(player, game);
                 break;
 
             case "Manila Police District":
@@ -32,6 +33,7 @@ public class SpecialBlock extends Block {
                 System.out.println("You have been arrested! You will be sent to Manila City Jail.");
                 player.updatePositionBlock(11); // Block 11 is the block number allocated for Manila City Jail in the Game board
                 break;
+                
             case "Meralco":
                 System.out.println(player.getName() + " has landed on Meralco.");
                 System.out.println("You have to pay Php 2,500 for your electric bill.");
@@ -52,8 +54,9 @@ public class SpecialBlock extends Block {
 
             case "Real Property Tax":
                 System.out.println(player.getName() + " has landed on Real Property Tax.");
-                // function call to calculate property tax
-                System.out.println("You have to pay Php [placeholder] for your real property tax.");
+                double tax = calculateRealPropertyTax(player, game);
+                System.out.println("You have to pay Php " + tax + " for your real property tax.");
+                player.updateCash(tax * -1);
                 break;
 
             case "Internal Revenue Allotment":
@@ -92,6 +95,40 @@ public class SpecialBlock extends Block {
                 break;
 
         }
+    }
+
+    private void specialBlockManilaCityJail(Player player, Game game) {
+        int ctr = 0;
+        boolean isDouble = false;
+        int d1 = game.rollDice();
+        int d2 = game.rollDice();
+
+        while (ctr < 3 && !isDouble) {
+            System.out.println(player.getName() + " rolled a " + d1 + " and a " + d2 + ".");
+            if (d1 == d2) {
+                isDouble = true;
+                System.out.println(player.getName() + " rolled a double! You can get out of jail.");
+                player.updatePositionBlock(12); // Move player out of jail
+            }
+            ctr++;
+        }
+        if (ctr == 3 && !isDouble) {
+            System.out.println(player.getName() + " did not roll a double. You will have to pay Php 5,000 to get out of jail.");
+            player.updateCash(-5000);
+        }
+
+    }
+
+    private double calculateRealPropertyTax(Player player, Game game) {
+        
+        double totalTax = 0.00;
+
+        for (PropertyBlock property : player.getOwnedProperties()) {
+            if (property != null) { 
+                totalTax = totalTax + (property.price * 0.05); 
+            }
+        }
+        return totalTax;
     }
     
 }

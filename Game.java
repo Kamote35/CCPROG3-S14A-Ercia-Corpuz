@@ -76,9 +76,18 @@ public class Game {
     }    
 
     public void start() {
-        System.out.println("Welcome to the game!");
-        System.out.print("Enter number of players (2-4): ");
-        int num = Integer.parseInt(scanner.nextLine());
+
+        int num;
+
+        do {
+            System.out.println("Welcome to the game!");
+            System.out.print("Enter number of players (2-4): ");
+            num = Integer.parseInt(scanner.nextLine());
+
+            if (num < 2 || num > 4) {
+                System.out.println("Invalid number of players.\n");
+            }
+        } while (num < 2 || num > 4);
 
         for (int i = 0; i < num; i++) {
             System.out.print("Enter name of Player " + (i + 1) + ": ");
