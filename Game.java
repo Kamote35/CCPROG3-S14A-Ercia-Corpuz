@@ -119,7 +119,7 @@ public class Game {
                         doubleCount++;
                     }
 
-                    if ((player.getPositionBlock() + move) > board.size()) {
+                    if (((player.getPositionBlock() + move) > board.size()) && (player.getPositionBlock() + move) % board.size() != 1) {
                         System.out.println(player.getName() + " passed GO! + Php 2,500");
                         player.updateCash(2500);
                     }
@@ -129,32 +129,86 @@ public class Game {
                     //     player.updatePositionBlock(player.getPositionBlock() % board.size());
                         
                     // }
-
-                    Block block = board.get(player.getPositionBlock() - 1);
+                    Block block;
+                    
+                    if (player.getPositionBlock() == 0) {
+                        block = board.get(player.getPositionBlock());
+                    }
+                    else {
+                        block = board.get(player.getPositionBlock() - 1);
+                    }
+                   
                     block.landedOn(player, this, scanner);
 
+                    if (player.getPositionBlock() == 0) { // update block in case player lands on Manila Police District
+                        block = board.get(player.getPositionBlock());
+                    }
+                    else {
+                        block = board.get(player.getPositionBlock() - 1);
+                    }
+
+                    System.out.println(player.getName() + "'s cash: Php " + player.getCash());
+                    player.updateNetWorth();
+                    System.out.println(player.getName() + "'s net worth: Php " + player.getNetWorth());
+                    System.out.println(player.getName() + "'s position: " + player.getPositionBlock() + " (" + block.getName() + ")");
+
+                   if (player.getCash() < 0) {
+                        System.out.println(player.getName() + " is bankrupt! You are out of the game.");
+                        for (int i = 0; i < players.size(); i++) {
+                            if (players.get(i).getName().equals(player.getName())) {
+                                players.remove(i);
+                                gameOver = players.size() <= 1; // Check if only one player remains
+                                break;
+                            }
+                        }
+                    }
+
+                    if (d1 == d2 && doubleCount < 3 && player.getCash() >= 0) {
+                        System.out.println(player.getName() + " gets to roll again!");
+                    } 
+                } while (doubleCount < 3 && d1 == d2);
+                
+                if (doubleCount == 3) { // get arrested for speeding
+                    System.out.println(player.getName() + " rolled a double three times in a row! Go to Jail for Speeding!");
+                    player.updatePositionBlock(11); // Move to Jail
+
+                    Block block;
+
+                    if (player.getPositionBlock() == 0) {
+                        block = board.get(player.getPositionBlock());
+                    }
+                    else {
+                        block = board.get(player.getPositionBlock() - 1);
+                    }
+                   
+                    block.landedOn(player, this, scanner);
+                    
                     System.out.println(player.getName() + "'s cash: Php " + player.getCash());
                     player.updateNetWorth();
                     System.out.println(player.getName() + "'s net worth: Php " + player.getNetWorth());
                     System.out.println(player.getName() + "'s position: " + player.getPositionBlock() + " (" + board.get(player.getPositionBlock() - 1).getName() + ")");
 
                     if (player.getCash() < 0) {
-                        System.out.println(player.getName() + " is bankrupt! Game over.");
-                        gameOver = true;
-                        break;
+                        System.out.println(player.getName() + " is bankrupt! You are out of the game.");
+                        for (int i = 0; i < players.size(); i++) {
+                            if (players.get(i).getName().equals(player.getName())) {
+                                players.remove(i);
+                                break;
+                            }
+                        }
                     }
-
-                    if (d1 == d2 && doubleCount < 3) {
-                        System.out.println(player.getName() + " gets to roll again!");
-                    } 
-                } while (doubleCount < 3 && d1 == d2);
-                
-                if (doubleCount == 3) {
-                    System.out.println(player.getName() + " rolled a double three times in a row! Go to Jail.");
-                    player.updatePositionBlock(11); // Move to Jail
                 }
                 
             
+
+            }
+        }
+
+        if (gameOver) {
+            System.out.println("Game over!");
+            if (players.size() == 1) {
+                System.out.println(players.get(0).getName() + " has MONOPOLY over the heart of Manila!");
+                System.out.println(players.get(0).getName() + " wins with a net worth of Php " + players.get(0).getNetWorth() + "!");
 
             }
         }

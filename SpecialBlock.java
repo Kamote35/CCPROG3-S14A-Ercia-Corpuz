@@ -15,13 +15,18 @@ public class SpecialBlock extends Block {
     @Override
     public void landedOn(Player player, Game game, Scanner scanner) { 
 
-        int rand = new Random().nextInt() % 3; // for chance block
+        int rand = new Random().nextInt(3); // for chance block
 
         switch(type) {
             case "GO":
                 System.out.println(player.getName() + " has passed the GO block! + Php 2,500");
                 player.updateCash(2500);
                 break;
+                
+            case "Manila Police District":
+                System.out.println(player.getName() + " has landed on Manila Police District.");
+                System.out.println("You have been arrested! You will be sent to Manila City Jail.");
+                player.updatePositionBlock(11); // Block 11 is the block number allocated for Manila City Jail in the Game board
 
             case "Manila City Jail":
                 System.out.println(player.getName() + " has landed on Manila City Jail.");
@@ -31,11 +36,6 @@ public class SpecialBlock extends Block {
                 specialBlockManilaCityJail(player, game, scanner);
                 break;
 
-            case "Manila Police District":
-                System.out.println(player.getName() + " has landed on Manila Police District.");
-                System.out.println("You have been arrested! You will be sent to Manila City Jail.");
-                player.updatePositionBlock(11); // Block 11 is the block number allocated for Manila City Jail in the Game board
-                break;
                 
             case "Meralco":
                 System.out.println(player.getName() + " has landed on Meralco.");
@@ -124,7 +124,10 @@ public class SpecialBlock extends Block {
                 player.updatePositionBlock(12); // Move player out of jail
             }
             else if (d1 != d2 && ctr < 3){
-                System.out.println(player.getName() + " did not roll a double, roll again.");
+
+                if (ctr < 2) {
+                    System.out.println(player.getName() + " did not roll a double, roll again.");
+                }
                 d1 = game.rollDice();
                 d2 = game.rollDice();
             }
@@ -154,16 +157,20 @@ public class SpecialBlock extends Block {
         int i = 0;
 
        
-        while (i < 40) {
+        while (i < game.board.size()) {
             if (game.board.get(i) instanceof PropertyBlock) { // checks if a block is of PropertyBlock class type
-                if (((PropertyBlock)game.board.get(i)).getOwner() == null) { // casts into PropertyBlock to access its methods, then checks if it's now owned yet.
-                    ((PropertyBlock)game.board.get(i)).setOwner(player);
-                    break;
+                PropertyBlock property = (PropertyBlock) game.board.get(i); // explicit cast for Java <16
+                if (property.getOwner() == null) { // casts into PropertyBlock to access its methods, then checks if it's now owned yet.
+                    property.setOwner(player);
+                    player.updateOwnedProperties(property);
+                    player.updateNetWorth();
+                    return;
                 }
             
             }
+            i++;
         }
-        if (i == 40) {
+        if (i == game.board.size()) {
             System.out.println("There are no more available properties in the board!");
         }
 
