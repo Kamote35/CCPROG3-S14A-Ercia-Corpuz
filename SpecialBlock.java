@@ -1,8 +1,11 @@
 import java.util.Random;
+import java.util.Scanner;
 
 public class SpecialBlock extends Block {
+    // Properties
     public String type;
 
+    // Constructor
     public SpecialBlock(String name, int blockNumber, String type){
         super(name, blockNumber);
         this.type = type;
@@ -10,13 +13,13 @@ public class SpecialBlock extends Block {
 
     // Override methods
     @Override
-    public void landedOn(Player player, Game game) { 
+    public void landedOn(Player player, Game game, Scanner scanner) { 
 
-        int rand = new Random().nextInt() % 3; // Simulates a dice roll (1-6)
+        int rand = new Random().nextInt() % 3; // for chance block
 
         switch(type) {
             case "GO":
-                System.out.println(player.getName() + " has passed the GO block! + Php2,500");
+                System.out.println(player.getName() + " has passed the GO block! + Php 2,500");
                 player.updateCash(2500);
                 break;
 
@@ -25,7 +28,7 @@ public class SpecialBlock extends Block {
                 System.out.println("Roll the dice thrice, if you roll a double, you can get out of jail.");
                 System.out.println("If you do not roll a double after three tries, you will have to pay Php 5,000 to get out of jail.");
                 
-                specialBlockManilaCityJail(player, game);
+                specialBlockManilaCityJail(player, game, scanner);
                 break;
 
             case "Manila Police District":
@@ -83,12 +86,14 @@ public class SpecialBlock extends Block {
                     case 1:
                         System.out.println(player.getName() + " has landed on Chance! You have been given a free property.");
                         // function call to give player a free property
+                        giveFreeProperty(player, game);
                         break;
                     case 2:
                         System.out.println(player.getName() + " has landed on Chance! Php 5,000 has been taken away from you.");
                         player.updateCash(-5000);
                         break;
                 }
+                break;
 
             case "Free Parking":
                 System.out.println(player.getName() + " has landed on Free Parking! You can rest here for a turn.");
@@ -97,21 +102,34 @@ public class SpecialBlock extends Block {
         }
     }
 
-    private void specialBlockManilaCityJail(Player player, Game game) {
+
+    // methods
+    private void specialBlockManilaCityJail(Player player, Game game, Scanner scanner) {
         int ctr = 0;
         boolean isDouble = false;
         int d1 = game.rollDice();
         int d2 = game.rollDice();
+        
+        
+        
 
-        while (ctr < 3 && !isDouble) {
+         do {
+            System.out.println("Press ENTER to roll the dice...");
+            scanner.nextLine(); // Wait for player to press Enter
+
             System.out.println(player.getName() + " rolled a " + d1 + " and a " + d2 + ".");
             if (d1 == d2) {
                 isDouble = true;
                 System.out.println(player.getName() + " rolled a double! You can get out of jail.");
                 player.updatePositionBlock(12); // Move player out of jail
             }
+            else if (d1 != d2 && ctr < 3){
+                System.out.println(player.getName() + " did not roll a double, roll again.");
+                d1 = game.rollDice();
+                d2 = game.rollDice();
+            }
             ctr++;
-        }
+        } while (ctr < 3 && !isDouble);
         if (ctr == 3 && !isDouble) {
             System.out.println(player.getName() + " did not roll a double. You will have to pay Php 5,000 to get out of jail.");
             player.updateCash(-5000);
@@ -129,6 +147,27 @@ public class SpecialBlock extends Block {
             }
         }
         return totalTax;
+    }
+
+    private void giveFreeProperty (Player player, Game game) {
+        // This method gives the next free property from GO! block.
+        int i = 0;
+
+       
+        while (i < 40) {
+            if (game.board.get(i) instanceof PropertyBlock) { // checks if a block is of PropertyBlock class type
+                if (((PropertyBlock)game.board.get(i)).getOwner() == null) { // casts into PropertyBlock to access its methods, then checks if it's now owned yet.
+                    ((PropertyBlock)game.board.get(i)).setOwner(player);
+                    break;
+                }
+            
+            }
+        }
+        if (i == 40) {
+            System.out.println("There are no more available properties in the board!");
+        }
+
+        
     }
     
 }

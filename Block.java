@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public abstract class Block {
 
     // Properties
@@ -13,7 +15,7 @@ public abstract class Block {
 
 
     // methods
-    public abstract void landedOn (Player player, Game game);
+    public abstract void landedOn (Player player, Game game, Scanner scanner);
 
     public String getName() {
         return this.name;

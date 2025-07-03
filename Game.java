@@ -21,9 +21,9 @@ public class Game {
         // Block 1 - Block 5
         board.add(new SpecialBlock("GO", 1, "GO"));
         board.add(new PropertyBlock("Walled City Manila (Intramuros & Port Area)","Muralla Street", 2, 25000.00, 5000.00));
-        board.add(new SpecialBlock("Internal Revenue Allotment", 3, "INTERNAL_REVENUE"));
+        board.add(new SpecialBlock("Internal Revenue Allotment", 3, "Internal Revenue Allotment"));
         board.add(new PropertyBlock("Walled City Manila (Intramuros & Port Area)","Muralla Street", 4, 25000.00, 5000.00));
-        board.add(new SpecialBlock("Income Tax", 5, "INCOME_TAX"));
+        board.add(new SpecialBlock("Income Tax", 5, "Income Tax"));
 
         // Block 6 - Block 10
         board.add(new SpecialBlock("LRT1", 6, "LRT1"));
@@ -100,34 +100,62 @@ public class Game {
         while (!gameOver) {
             for (Player player : players) {
                 System.out.println("\nIt's " + player.getName() + "'s turn. Cash: Php " + player.getCash());
+                 int doubleCount = 0;
+                int d1;
+                int d2;
+
+                do { 
                 System.out.println("Press ENTER to roll the dice...");
                 scanner.nextLine(); // Wait for player to press Enter
 
-                int d1 = rollDice();
-                int d2 = rollDice();
+                d1 = rollDice();
+                d2 = rollDice();
                 int move = d1 + d2;
 
-                System.out.println("Rolled: a " + d1 + " and a " + d2 + ".\nMove: " + move + " blocks.");
+                    if (d1 != d2) {
+                        System.out.println(player.getName() + " rolled a " + d1 + " and a " + d2 + " -> Move: " + move + " blocks.");
+                    } else {
+                        System.out.println(player.getName() + " rolled a double! (" + d1 + " and " + d2 + ") -> Move: " + move + " blocks and roll again.");
+                        doubleCount++;
+                    }
 
-                player.updatePositionBlock(player.getPositionBlock() + move);
-                if (player.getPositionBlock() > board.size()) {
-                    player.updatePositionBlock(player.getPositionBlock() % board.size());
-                    System.out.println(player.getName() + " passed GO! + Php 2,500");
-                    player.updateCash(2500);
+                    if ((player.getPositionBlock() + move) > board.size()) {
+                        System.out.println(player.getName() + " passed GO! + Php 2,500");
+                        player.updateCash(2500);
+                    }
+                    player.updatePositionBlock((player.getPositionBlock() + move) % board.size());
+
+                    // if (player.getPositionBlock() > board.size()) {
+                    //     player.updatePositionBlock(player.getPositionBlock() % board.size());
+                        
+                    // }
+
+                    Block block = board.get(player.getPositionBlock() - 1);
+                    block.landedOn(player, this, scanner);
+
+                    System.out.println(player.getName() + "'s cash: Php " + player.getCash());
+                    player.updateNetWorth();
+                    System.out.println(player.getName() + "'s net worth: Php " + player.getNetWorth());
+                    System.out.println(player.getName() + "'s position: " + player.getPositionBlock() + " (" + board.get(player.getPositionBlock() - 1).getName() + ")");
+
+                    if (player.getCash() < 0) {
+                        System.out.println(player.getName() + " is bankrupt! Game over.");
+                        gameOver = true;
+                        break;
+                    }
+
+                    if (d1 == d2 && doubleCount < 3) {
+                        System.out.println(player.getName() + " gets to roll again!");
+                    } 
+                } while (doubleCount < 3 && d1 == d2);
+                
+                if (doubleCount == 3) {
+                    System.out.println(player.getName() + " rolled a double three times in a row! Go to Jail.");
+                    player.updatePositionBlock(11); // Move to Jail
                 }
+                
+            
 
-                Block block = board.get(player.getPositionBlock() - 1);
-                block.landedOn(player, this);
-
-                System.out.println(player.getName() + "'s cash: Php " + player.getCash());
-                System.out.println(player.getName() + "'s net worth: Php " + player.getNetWorth());
-                System.out.println(player.getName() + "'s position: " + player.getPositionBlock() + " (" + board.get(player.getPositionBlock() - 1).getName() + ")");
-
-                if (player.getCash() < 0) {
-                    System.out.println(player.getName() + " is bankrupt! Game over.");
-                    gameOver = true;
-                    break;
-                }
             }
         }
     }

@@ -2,11 +2,11 @@ import java.util.Scanner;
 
 
 public class PropertyBlock extends Block{
-    // properties
+    // Properties
     final public String street;
     final public double price;
     final public double rentprice;
-    public Player Owner;
+    private Player Owner;
 
 
     // Constructors
@@ -20,7 +20,7 @@ public class PropertyBlock extends Block{
 
     // Override methods
     @Override
-    public void landedOn(Player player, Game game) {
+    public void landedOn(Player player, Game game, Scanner scanner) {
 
         String playername = player.getName();
 
@@ -86,14 +86,18 @@ public class PropertyBlock extends Block{
     }
 
     // methods
-    public boolean isOwned() {
-        if (this.Owner != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+    // public boolean isOwned() {
+    //     if (this.Owner != null) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
 
+    // Getters
+    public Player getOwner () {
+        return this.Owner;
+    }
 
 
 
