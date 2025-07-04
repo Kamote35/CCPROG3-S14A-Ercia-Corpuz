@@ -25,52 +25,86 @@ public class Player {
         this.netWorth = this.cash; 
     }
 
-    // Getters
+    /** 
+     * @return String
+     */
     public String getName() {
         return this.name;
     }
 
+    /** 
+     * @return double
+     */
     public double getCash() {
         return this.cash;
     }
 
+    /** 
+     * @return int
+     */
     public int getPlayerLvl() {
         return playerLvl;
     }
 
+    /** 
+     * @return int
+     */
     public int getPositionBlock() {
         return positionBlock;
     }
 
+    /** 
+     * @return int
+     */
     public int getNumberOwnedProperties() {
         return this.ownedProperties.size();
     }
 
+    /** 
+     * @return int
+     */
     public int getNumberRentedProperties() {
         return this.rentedProperties.size();
     }
 
+    /** 
+     * @return ArrayList<PropertyBlock>
+     */
     public ArrayList<PropertyBlock> getOwnedProperties() {
         return this.ownedProperties;
     }
 
+    /** 
+     * @return ArrayList<PropertyBlock>
+     */
     public ArrayList<PropertyBlock> getRentedProperties() {
         return this.rentedProperties;
     }
 
+    /** 
+     * @return double
+     */
     public double getNetWorth() {
         return this.netWorth;
     }
 
-    // Setters
+    /** 
+     * @param amount
+     */
     public void updateCash(double amount) {
         this.cash += amount;
     }
 
+    /** 
+     * @param positionBlock
+     */
     public void updatePositionBlock(int positionBlock) {
         this.positionBlock = positionBlock;
     }
 
+    /** 
+     * @param property
+     */
     public void updateOwnedProperties(PropertyBlock property) {
 
         if (ownedProperties.isEmpty()) {
@@ -85,6 +119,9 @@ public class Player {
         }
     }
 
+    /** 
+     * @param property
+     */
     public void updateRentedProperties(PropertyBlock property) {
         for (int i = 0; i < max; i++) {
             if (rentedProperties.get(i) == null) {

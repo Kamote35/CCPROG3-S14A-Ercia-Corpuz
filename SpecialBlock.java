@@ -11,7 +11,11 @@ public class SpecialBlock extends Block {
         this.type = type;
     }
 
-    // Override methods
+    /** 
+     * @param player
+     * @param game
+     * @param scanner
+     */
     @Override
     public void landedOn(Player player, Game game, Scanner scanner) { 
 
@@ -103,7 +107,11 @@ public class SpecialBlock extends Block {
     }
 
 
-    // methods
+    /** 
+     * @param player
+     * @param game
+     * @param scanner
+     */
     private void specialBlockManilaCityJail(Player player, Game game, Scanner scanner) {
         int ctr = 0;
         boolean isDouble = false;
@@ -140,6 +148,10 @@ public class SpecialBlock extends Block {
 
     }
 
+    /** 
+     * @param player
+     * @return double
+     */
     private double calculateRealPropertyTax(Player player) {
         
         double totalTax = 0.00;
@@ -152,6 +164,10 @@ public class SpecialBlock extends Block {
         return totalTax;
     }
 
+    /** 
+     * @param player
+     * @param game
+     */
     private void giveFreeProperty (Player player, Game game) {
         // This method gives the next free property from GO! block.
         int i = 0;

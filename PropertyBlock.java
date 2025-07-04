@@ -18,7 +18,11 @@ public class PropertyBlock extends Block{
         this.Owner = null; // instantiates the owner to null
     }
 
-    // Override methods
+    /** 
+     * @param player
+     * @param game
+     * @param scanner
+     */
     @Override
     public void landedOn(Player player, Game game, Scanner scanner) {
 
@@ -80,21 +84,16 @@ public class PropertyBlock extends Block{
 
 
 
-    // Setters
+    /** 
+     * @param owner
+     */
     public void setOwner(Player owner) {
         this.Owner = owner;
     }
 
-    // methods
-    // public boolean isOwned() {
-    //     if (this.Owner != null) {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // }
-
-    // Getters
+    /** 
+     * @return Player
+     */
     public Player getOwner () {
         return this.Owner;
     }

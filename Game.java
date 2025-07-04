@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -98,6 +99,8 @@ public class Game {
         boolean gameOver = false;
 
         while (!gameOver) {
+            List<Player> playersToRemove = new ArrayList<>();
+
             for (Player player : players) {
                 System.out.println("\nIt's " + player.getName() + "'s turn. Cash: Php " + player.getCash());
                  int doubleCount = 0;
@@ -125,12 +128,9 @@ public class Game {
                     }
                     player.updatePositionBlock((player.getPositionBlock() + move) % board.size());
 
-                    // if (player.getPositionBlock() > board.size()) {
-                    //     player.updatePositionBlock(player.getPositionBlock() % board.size());
-                        
-                    // }
                     Block block;
                     
+                    // error handling in case player lands exactly on the GO! block
                     if (player.getPositionBlock() == 0) {
                         block = board.get(player.getPositionBlock());
                     }
@@ -140,7 +140,9 @@ public class Game {
                    
                     block.landedOn(player, this, scanner);
 
-                    if (player.getPositionBlock() == 0) { // update block in case player lands on Manila Police District
+                    // same error handling in case player lands exactly on the GO! block
+                    // update block in case player lands on Manila Police District
+                    if (player.getPositionBlock() == 0) { 
                         block = board.get(player.getPositionBlock());
                     }
                     else {
@@ -154,13 +156,8 @@ public class Game {
 
                    if (player.getCash() < 0) {
                         System.out.println(player.getName() + " is bankrupt! You are out of the game.");
-                        for (int i = 0; i < players.size(); i++) {
-                            if (players.get(i).getName().equals(player.getName())) {
-                                players.remove(i);
-                                gameOver = players.size() <= 1; // Check if only one player remains
-                                break;
-                            }
-                        }
+                        playersToRemove.add(player);
+                        doubleCount = 0;
                     }
 
                     if (d1 == d2 && doubleCount < 3 && player.getCash() >= 0) {
@@ -190,18 +187,17 @@ public class Game {
 
                     if (player.getCash() < 0) {
                         System.out.println(player.getName() + " is bankrupt! You are out of the game.");
-                        for (int i = 0; i < players.size(); i++) {
-                            if (players.get(i).getName().equals(player.getName())) {
-                                players.remove(i);
-                                break;
-                            }
-                        }
+                        playersToRemove.add(player);
                     }
                 }
-                
-            
-
             }
+
+            // utilize the list to remove the bankrupt player from the arraylist of players
+            for (Player bankruptPlayer : playersToRemove) {
+                players.remove(bankruptPlayer); // removes first instance of bankruptPlayer from the arraylist
+            }
+
+            gameOver = players.size() <= 1; // update gameOver flag
         }
 
         if (gameOver) {
@@ -214,6 +210,9 @@ public class Game {
         }
     }
 
+    /** 
+     * @return int
+     */
     public int rollDice() {
         return rand.nextInt(6) + 1;
     }

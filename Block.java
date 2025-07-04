@@ -14,9 +14,16 @@ public abstract class Block {
     }
 
 
-    // methods
+    /** 
+     * @param player
+     * @param game
+     * @param getName(
+     */
     public abstract void landedOn (Player player, Game game, Scanner scanner);
 
+    /** 
+     * @return String
+     */
     public String getName() {
         return this.name;
     }
