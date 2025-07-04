@@ -3,11 +3,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+
+// Game class where the main gameplay of the Monopoly Manila will happen
 public class Game {
+
     final public ArrayList<Player> players;
     final public ArrayList<Block> board;
-    Random rand;
-    Scanner scanner; // Added scanner
+    public Random rand;
+    public Scanner scanner; // Added scanner
 
     // constructors
     public Game() {

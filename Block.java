@@ -1,5 +1,5 @@
 import java.util.Scanner;
-
+// Block superclass for SpecialBlock subclass and PropertyBlock subclass
 public abstract class Block {
 
     // Properties

@@ -1,3 +1,5 @@
+
+// MonopolyManila class to start the game, also serves as the Main file
 public class MonopolyManila
 {
     /** 

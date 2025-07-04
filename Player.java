@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 
+// Player class that represents a player in the Monopoly Manila game
 public class Player {
 
     // Constants
