@@ -1,3 +1,2 @@
-# CCPROG3-S14A-Ercia-Corpuz
+# **Declaration of Original Work**
 
-hello world!
