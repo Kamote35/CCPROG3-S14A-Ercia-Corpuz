@@ -9,8 +9,8 @@ scripts, algorithms, and documentation) contained within the project titled <br>
 **"Simplified Monopoly Game: Manila"** is our original work.
 <br>
 <br>
-This code has been developed independently by us, and to the best of our knowledge, does not <br>
-infringe upon the intellectual property rights of any third party. Where external libraries, <br>
+This code has been developed independently by us, and to the best of our knowledge, does <br>
+not infringe upon the intellectual property rights of any third party. Where external libraries, <br>
 frameworks, or code snippets have been utilized, they are either:
 * Properly attributed and used in accordance with their respective licenses. 
 * Public domain. 
