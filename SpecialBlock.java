@@ -57,7 +57,7 @@ public class SpecialBlock extends Block {
 
             case "Real Property Tax":
                 System.out.println(player.getName() + " has landed on Real Property Tax.");
-                double tax = calculateRealPropertyTax(player, game);
+                double tax = calculateRealPropertyTax(player);
                 System.out.println("You have to pay Php " + tax + " for your real property tax.");
                 player.updateCash(tax * -1);
                 break;
@@ -65,7 +65,7 @@ public class SpecialBlock extends Block {
             case "Internal Revenue Allotment":
                 System.out.println(player.getName() + " has landed on Internal Revenue Allotment.");
                 System.out.println("You have earned Php 5,000.");
-                player.updateCash(5000);
+                player.updateCash(5000.00);
                 break;
 
             // Railroad blocks
@@ -81,7 +81,7 @@ public class SpecialBlock extends Block {
                 switch (rand) {
                     case 0:
                         System.out.println(player.getName() + " has landed on Chance! You have been given Php 20,000.");
-                        player.updateCash(20000);
+                        player.updateCash(20000.00);
                         break;
                     case 1:
                         System.out.println(player.getName() + " has landed on Chance! You have been given a free property.");
@@ -90,7 +90,7 @@ public class SpecialBlock extends Block {
                         break;
                     case 2:
                         System.out.println(player.getName() + " has landed on Chance! Php 5,000 has been taken away from you.");
-                        player.updateCash(-5000);
+                        player.updateCash(5000.00 *-1);
                         break;
                 }
                 break;
@@ -135,12 +135,12 @@ public class SpecialBlock extends Block {
         } while (ctr < 3 && !isDouble);
         if (ctr == 3 && !isDouble) {
             System.out.println(player.getName() + " did not roll a double. You will have to pay Php 5,000 to get out of jail.");
-            player.updateCash(-5000);
+            player.updateCash(5000.00 *-1);
         }
 
     }
 
-    private double calculateRealPropertyTax(Player player, Game game) {
+    private double calculateRealPropertyTax(Player player) {
         
         double totalTax = 0.00;
 
