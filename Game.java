@@ -105,8 +105,10 @@ public class Game {
             List<Player> playersToRemove = new ArrayList<>();
 
             for (Player player : players) {
-                System.out.println("\nIt's " + player.getName() + "'s turn. Cash: Php " + player.getCash());
-                 int doubleCount = 0;
+                player.updateNetWorth();
+                player.updatePlayerLvl();
+                System.out.printf("%nIt's %s's turn! [Level %d] Cash: Php %.2f%n", player.getName(), player.getPlayerLvl(), player.getCash());
+                int doubleCount = 0;
                 int d1;
                 int d2;
 
@@ -180,13 +182,26 @@ public class Game {
                     else {
                         block = board.get(player.getPositionBlock() - 1);
                     }
-                   
+                   int oldLevel = player.getPlayerLvl(); // Save current level before block effect
+
                     block.landedOn(player, this, scanner);
-                    
-                    System.out.println(player.getName() + "'s cash: Php " + player.getCash());
+
+                    // same error handling in case player lands exactly on the GO! block
+                    if (player.getPositionBlock() == 0) {
+                    block = board.get(player.getPositionBlock());
+                    } else {
+                    block = board.get(player.getPositionBlock() - 1);
+                    }
                     player.updateNetWorth();
+                    player.updatePlayerLvl(); // Update level AFTER net worth
+
+                    if (player.getPlayerLvl() > oldLevel) {
+                         System.out.printf("%s has leveled up to Level %d!%n", player.getName(), player.getPlayerLvl());
+                    }
+                    System.out.println(player.getName() + "'s cash: Php " + player.getCash());
                     System.out.println(player.getName() + "'s net worth: Php " + player.getNetWorth());
-                    System.out.println(player.getName() + "'s position: " + player.getPositionBlock() + " (" + board.get(player.getPositionBlock() - 1).getName() + ")");
+                    System.out.println(player.getName() + "'s position: " + player.getPositionBlock() + " (" + block.getName() + ")");
+
 
                     if (player.getCash() < 0) {
                         System.out.println(player.getName() + " is bankrupt! You are out of the game.");
