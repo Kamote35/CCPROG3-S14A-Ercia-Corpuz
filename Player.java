@@ -14,6 +14,7 @@ public class Player {
     final private ArrayList<PropertyBlock> ownedProperties;
     final private ArrayList<PropertyBlock> rentedProperties;
     private double netWorth;
+    
 
     // Constructors
     public Player(String name){
@@ -133,9 +134,19 @@ public class Player {
     }
 
     public void updatePlayerLvl() {
-        this.playerLvl++;
-    }
+    updateNetWorth(); // always update first
+    double worth = this.netWorth;
 
+    if (worth >= 1250000) {
+        this.playerLvl = 3;
+    } else if (worth >= 600000) {
+        this.playerLvl = 2;
+    } else if (worth >= 250000) {
+        this.playerLvl = 1;
+    } else {
+        this.playerLvl = 0;
+    }
+}
     public void updateNetWorth() {
         this.netWorth = this.cash;
         for (PropertyBlock property : ownedProperties) {
@@ -144,5 +155,15 @@ public class Player {
             }
         }
     }
+
+    public double getDiscountRate() {
+    switch (playerLvl) {
+        case 2: return 0.05;
+        case 3: return 0.10;
+        case 4: return 0.25;
+        default: return 0.0;
+    }
+
+}
 
 }
