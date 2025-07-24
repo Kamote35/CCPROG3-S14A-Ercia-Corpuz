@@ -57,12 +57,17 @@ public class PropertyBlock extends Block{
 
                 switch (input) {
                     case "Y":
-                        if (player.getCash() >= price) {
-                            player.updateCash(this.price * -1);
+                        double discount = player.getDiscountRate();
+                        double discountedPrice = price * (1 - discount);
+
+                        if (player.getCash() >= discountedPrice) {
+                             player.updateCash(-discountedPrice);
                             this.Owner = player;
                             player.updateOwnedProperties(this);
-                            System.out.println(playername + " has bought " + this.street + " in " + this.name + "!");
-                            System.out.println(playername + " remaining cash: Php" + player.getCash());
+                            player.updateNetWorth();
+                            player.updatePlayerLvl();
+                            
+                            System.out.printf("Bought with %.0f%% discount: Php %.2f for %s%n", discount * 100, discountedPrice, this.street);
                         } else {
                             System.out.println(playername + " does not have enough cash!");
                         }
