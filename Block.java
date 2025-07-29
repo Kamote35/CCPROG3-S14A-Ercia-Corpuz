@@ -27,4 +27,8 @@ public abstract class Block {
     public String getName() {
         return this.name;
     }
+
+    public int getBlockNumber() {
+        return this.blockNumber;
+    }
 }

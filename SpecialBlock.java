@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -78,7 +79,8 @@ public class SpecialBlock extends Block {
             case "MRT3":
             case "PNR":
                 System.out.println(player.getName() + " has landed on " + type + ".");
-                // For future implementation (Phase 2)
+                // Go to next available rail station
+                checkNextAvailableRailStation(player, game, type);
                 break;
             
             case "Chance":
@@ -192,5 +194,35 @@ public class SpecialBlock extends Block {
 
         
     }
-    
+
+
+    private void checkNextAvailableRailStation(Player currentPlayer, Game game, String type) {
+        // This method checks the next available rail station.
+        System.out.println("Checking next available rail station...");
+        // Logic to find the next available rail station
+
+        ArrayList<SpecialBlock> emptyRailroadBlocks = game.getEmptyRailroadBlocks(currentPlayer);
+        
+
+        if (emptyRailroadBlocks.isEmpty()) {
+            System.out.println("All rail stations are closed.");
+            return;
+        }
+
+        // Do not check for the current rail road block since current player is there
+        for (SpecialBlock block : emptyRailroadBlocks) {
+            if (block.getName().equals(type)) {
+                emptyRailroadBlocks.remove(block);
+                break;
+            }
+        }
+        int rand = new Random().nextInt(emptyRailroadBlocks.size()); 
+
+        SpecialBlock nextAvailableRail = emptyRailroadBlocks.get(rand);
+        currentPlayer.updatePositionBlock(nextAvailableRail.getBlockNumber());
+        System.out.println("Arriving in " + nextAvailableRail.getName() + " station.");
+               
+
+    }
+
 }

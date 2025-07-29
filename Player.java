@@ -12,7 +12,6 @@ public class Player {
     private int playerLvl;
     private int positionBlock;
     final private ArrayList<PropertyBlock> ownedProperties;
-    final private ArrayList<PropertyBlock> rentedProperties;
     private double netWorth;
     
 
@@ -20,10 +19,9 @@ public class Player {
     public Player(String name){
         this.name = name;
         this.cash = 50000; // Starting cash of Php 50,000
-        this.playerLvl = 1; 
+        this.playerLvl = 0; 
         this.positionBlock = 1; // starting position is block 1 (GO Block)
         this.ownedProperties = new ArrayList<>();
-        this.rentedProperties = new ArrayList<>();
         this.netWorth = this.cash; 
     }
 
@@ -62,25 +60,12 @@ public class Player {
         return this.ownedProperties.size();
     }
 
-    /** 
-     * @return int
-     */
-    public int getNumberRentedProperties() {
-        return this.rentedProperties.size();
-    }
 
     /** 
      * @return ArrayList<PropertyBlock>
      */
     public ArrayList<PropertyBlock> getOwnedProperties() {
         return this.ownedProperties;
-    }
-
-    /** 
-     * @return ArrayList<PropertyBlock>
-     */
-    public ArrayList<PropertyBlock> getRentedProperties() {
-        return this.rentedProperties;
     }
 
     /** 
@@ -121,28 +106,20 @@ public class Player {
         }
     }
 
-    /** 
-     * @param property
-     */
-    public void updateRentedProperties(PropertyBlock property) {
-        for (int i = 0; i < max; i++) {
-            if (rentedProperties.get(i) == null) {
-                rentedProperties.set(i, property);
-                break;
-            }
-        }
-    }
 
     public void updatePlayerLvl() {
     updateNetWorth(); // always update first
     double worth = this.netWorth;
 
-    if (worth >= 1250000) {
+    if (worth >= 125000.00) { // level 3 needs 1,250,000.00 net worth
         this.playerLvl = 3;
-    } else if (worth >= 600000) {
+        System.out.println(this.name + " is now Level 3! Enjoy a 25% discount on property purchases.");
+    } else if (worth >= 100000.00) { // level 2 needs 600,000.00 net worth
         this.playerLvl = 2;
-    } else if (worth >= 250000) {
+        System.out.println(this.name + " is now Level 2! Enjoy a 10% discount on property purchases.");
+    } else if (worth >= 75000.00) { // level 1 needs 250,000.00 net worth
         this.playerLvl = 1;
+        System.out.println(this.name + " is now Level 1! Enjoy a 5% discount on property purchases.");
     } else {
         this.playerLvl = 0;
     }
@@ -158,9 +135,9 @@ public class Player {
 
     public double getDiscountRate() {
     switch (playerLvl) {
-        case 2: return 0.05;
-        case 3: return 0.10;
-        case 4: return 0.25;
+        case 1: return 0.05; 
+        case 2: return 0.10; 
+        case 3: return 0.25; 
         default: return 0.0;
     }
 

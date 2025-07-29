@@ -106,7 +106,6 @@ public class Game {
 
             for (Player player : players) {
                 player.updateNetWorth();
-                player.updatePlayerLvl();
                 System.out.printf("%nIt's %s's turn! [Level %d] Cash: Php %.2f%n", player.getName(), player.getPlayerLvl(), player.getCash());
                 int doubleCount = 0;
                 int d1;
@@ -159,6 +158,10 @@ public class Game {
                     System.out.println(player.getName() + "'s net worth: Php " + player.getNetWorth());
                     System.out.println(player.getName() + "'s position: " + player.getPositionBlock() + " (" + block.getName() + ")");
 
+                    if (player.getCash() >= 0) {
+                        player.updatePlayerLvl();
+                    }
+
                    if (player.getCash() < 0) {
                         System.out.println(player.getName() + " is bankrupt! You are out of the game.");
                         playersToRemove.add(player);
@@ -202,19 +205,32 @@ public class Game {
                     System.out.println(player.getName() + "'s net worth: Php " + player.getNetWorth());
                     System.out.println(player.getName() + "'s position: " + player.getPositionBlock() + " (" + block.getName() + ")");
 
+                    if (player.getCash() >= 0) {
+                        player.updatePlayerLvl();
+                    }
 
                     if (player.getCash() < 0) {
                         System.out.println(player.getName() + " is bankrupt! You are out of the game.");
                         playersToRemove.add(player);
                     }
                 }
+                
             }
 
-            // utilize the list to remove the bankrupt player from the arraylist of players
-            for (Player bankruptPlayer : playersToRemove) {
-                players.remove(bankruptPlayer); // removes first instance of bankruptPlayer from the arraylist
-            }
+            // remove the bankrupt player from the arraylist of players
+            if (players.size() > 1) {
+                for (Player bankruptPlayer : playersToRemove) {
+                    System.out.println("");
+                    for (PropertyBlock property : bankruptPlayer.getOwnedProperties()) {
+                        if (this.board.contains(property)) {
+                            ((PropertyBlock) this.board.get(this.board.indexOf(property))).goPublic(); // Sets the property to be available to public
+                        }
+                    }
 
+                    players.remove(bankruptPlayer); // removes first instance of bankruptPlayer from the arraylist
+                }
+            }
+            
             gameOver = players.size() <= 1; // update gameOver flag
         }
 
@@ -233,5 +249,39 @@ public class Game {
      */
     public int rollDice() {
         return rand.nextInt(6) + 1;
+    }
+
+    /**
+     * Checks the board for railroad blocks and returns the block numbers of railroad blocks
+     * where there are no other players currently located (excluding the current player)
+     * @param currentPlayer The player whose turn it is
+     * @return ArrayList<Integer> containing block numbers of empty railroad blocks
+     */
+    public ArrayList<SpecialBlock> getEmptyRailroadBlocks(Player currentPlayer) {
+        ArrayList<SpecialBlock> emptyRailroadBlocks = new ArrayList<>();
+        
+        // Railroad block numbers: LRT1 (6), PNR (16), LRT2 (26), MRT3 (36)
+        String[] railroadBlockStations = {"LRT1", "PNR", "LRT2", "MRT3"};
+        
+        for (String railroadBlock : railroadBlockStations) {
+            boolean hasOtherPlayer = false;
+            
+            for (Player player : players) {
+                if (player != currentPlayer && this.board.get(player.getPositionBlock() - 1).getName().equals(railroadBlock)) {
+                    hasOtherPlayer = true;
+                    break;
+                }
+            }
+            
+            if (!hasOtherPlayer) {
+                for (Block block : board) {
+                    if (block instanceof SpecialBlock && block.getName().equals(railroadBlock)) {
+                        emptyRailroadBlocks.add((SpecialBlock) block);
+                        break; // Only add the first instance of that railroad block
+                    }
+                }
+            }
+        }
+        return emptyRailroadBlocks;
     }
 }
