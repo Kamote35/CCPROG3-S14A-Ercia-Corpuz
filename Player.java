@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 // Player class that represents a player in the Monopoly Manila game
 public class Player {
-    public boolean isBankrupt = false;
+    public boolean isBankrupt;
 
     // Constants
     final public int max = 22;
@@ -18,6 +18,7 @@ public class Player {
 
     // Constructors
     public Player(String name){
+        this.isBankrupt = false;
         this.name = name;
         this.cash = 50000; // Starting cash of Php 50,000
         this.playerLvl = 0; 
@@ -53,22 +54,22 @@ public class Player {
     public int getPositionBlock() {
         return positionBlock;
     }
-
+    
     /** 
      * @return int
      */
     public int getNumberOwnedProperties() {
         return this.ownedProperties.size();
     }
-
-
+    
+    
     /** 
      * @return ArrayList<PropertyBlock>
      */
     public ArrayList<PropertyBlock> getOwnedProperties() {
         return this.ownedProperties;
     }
-
+    
     /** 
      * @return double
      */
@@ -77,12 +78,37 @@ public class Player {
     }
 
     /** 
+     * Returns the discount rate based on the player's level.
+     * @return double
+     */
+    public double getDiscountRate() {
+        switch (playerLvl) {
+            case 1: return 0.05; 
+            case 2: return 0.10; 
+            case 3: return 0.25; 
+            default: return 0.0;
+        }  
+
+    }
+
+    /** 
+     * Returns the discount percentage as a string.
+     * @return String
+     */
+    public String getDiscounts() {
+        if (playerLvl > 0) {
+            return (int)(getDiscountRate() * 100) + "%";
+        }
+        return "";
+    }
+
+    /** 
      * @param amount
      */
     public void updateCash(double amount) {
         this.cash += amount;
     }
-
+    
     /** 
      * @param positionBlock
      */
@@ -112,19 +138,19 @@ public class Player {
     updateNetWorth(); // always update first
     double worth = this.netWorth;
 
-    if (worth >= 125000.00) { // level 3 needs 1,250,000.00 net worth
-        this.playerLvl = 3;
-        System.out.println(this.name + " is now Level 3! Enjoy a 25% discount on property purchases.");
-    } else if (worth >= 100000.00) { // level 2 needs 600,000.00 net worth
-        this.playerLvl = 2;
-        System.out.println(this.name + " is now Level 2! Enjoy a 10% discount on property purchases.");
-    } else if (worth >= 75000.00) { // level 1 needs 250,000.00 net worth
-        this.playerLvl = 1;
-        System.out.println(this.name + " is now Level 1! Enjoy a 5% discount on property purchases.");
-    } else {
-        this.playerLvl = 0;
+        if (worth >= 125000.00) { // level 3 needs 1,250,000.00 net worth
+            this.playerLvl = 3;
+            System.out.println(this.name + " is now Level 3! Enjoy a 25% discount on property purchases.");
+        } else if (worth >= 100000.00) { // level 2 needs 600,000.00 net worth
+            this.playerLvl = 2;
+            System.out.println(this.name + " is now Level 2! Enjoy a 10% discount on property purchases.");
+        } else if (worth >= 75000.00) { // level 1 needs 250,000.00 net worth
+            this.playerLvl = 1;
+            System.out.println(this.name + " is now Level 1! Enjoy a 5% discount on property purchases.");
+        } else {
+            this.playerLvl = 0;
+        }
     }
-}
     public void updateNetWorth() {
         this.netWorth = this.cash;
         for (PropertyBlock property : ownedProperties) {
@@ -134,21 +160,5 @@ public class Player {
         }
     }
 
-    public double getDiscountRate() {
-    switch (playerLvl) {
-        case 1: return 0.05; 
-        case 2: return 0.10; 
-        case 3: return 0.25; 
-        default: return 0.0;
-    }
-
-}
-
-    public String getDiscounts() {
-        if (playerLvl > 0) {
-            return (int)(getDiscountRate() * 100) + "%";
-        }
-        return "";
-    }
 
 }
