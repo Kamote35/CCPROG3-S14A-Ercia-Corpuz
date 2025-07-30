@@ -50,16 +50,43 @@ public class MonopolyManilaController {
             // Property and special block handling
             if (block instanceof PropertyBlock property) {
                 if (property.getOwner() == null) {
+                    // Calculate discounted price
+                    double originalPrice = property.price;
+                    double discountRate = player.getDiscountRate();
+                    double discountedPrice = originalPrice * (1 - discountRate);
+                    
+                    String discountText = "";
+                    if (discountRate > 0) {
+                        discountText = "\nOriginal Price: Php " + String.format("%.2f", originalPrice) +
+                                     "\nYour Discount (" + (int)(discountRate * 100) + "%): -Php " + String.format("%.2f", originalPrice - discountedPrice) +
+                                     "\nDiscounted Price: Php " + String.format("%.2f", discountedPrice);
+                    }
+                    
                     int option = javax.swing.JOptionPane.showConfirmDialog(view,
-                            player.getName() + ", do you want to buy this property?\n\n" +
-                            property.getName() + "\nPrice: Php " + String.format("%.2f", property.price),
+                            player.getName() + " (Level " + player.getPlayerLvl() + "), do you want to buy this property?\n\n" +
+                            property.getName() + discountText +
+                            (discountRate > 0 ? "" : "\nPrice: Php " + String.format("%.2f", originalPrice)),
                             "Buy Property", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE);
                     if (option == javax.swing.JOptionPane.YES_OPTION) {
-                        if (player.getCash() >= property.price) {
-                            player.updateCash(-property.price);
+                        if (player.getCash() >= discountedPrice) {
+                            // Apply the discounted price
+                            player.updateCash(-discountedPrice);
                             property.setOwner(player);
                             player.updateOwnedProperties(property);
-                            view.log(player.getName() + " bought " + property.getName() + " for Php " + String.format("%.2f", property.price));
+                            
+                            if (discountRate > 0) {
+                                view.log(player.getName() + " bought " + property.getName() + " with " + (int)(discountRate * 100) + "% discount for Php " + String.format("%.2f", discountedPrice) + " (Original: Php " + String.format("%.2f", originalPrice) + ")");
+                            } else {
+                                view.log(player.getName() + " bought " + property.getName() + " for Php " + String.format("%.2f", discountedPrice));
+                            }
+                            
+                            // Check for level up after purchase
+                            checkAndHandleLevelUp(player);
+                            
+                            // Check for immediate bankruptcy after purchase
+                            if (checkAndHandleImmediateBankruptcy(player)) {
+                                return; // Exit immediately if player went bankrupt and was removed
+                            }
                         } else {
                             javax.swing.JOptionPane.showMessageDialog(view, "Not enough cash to buy this property!", "Insufficient Funds", javax.swing.JOptionPane.WARNING_MESSAGE);
                             view.log(player.getName() + " could not afford " + property.getName());
@@ -67,9 +94,80 @@ public class MonopolyManilaController {
                     } else {
                         view.log(player.getName() + " chose not to buy " + property.getName());
                     }
+                } else if (property.getOwner() == player) {
+                    // Player landed on their own property
+                    view.log(player.getName() + " landed on their own property: " + property.getName());
+                    view.log("You can collect rent from other players who land here!");
                 } else if (property.getOwner() != player) {
-                    // Optionally, handle rent payment here
-                    view.log("This property is owned by " + property.getOwner().getName() + ".");
+                    // Handle rent payment
+                    Player owner = property.getOwner();
+                    double rent = property.rentprice;
+                    
+                    view.log(player.getName() + " landed on " + property.getName() + " owned by " + owner.getName());
+                    view.log("Rent: Php " + String.format("%.2f", rent));
+                    
+                    // Show rent payment dialog
+                    javax.swing.JOptionPane.showMessageDialog(view,
+                        player.getName() + " must pay rent to " + owner.getName() + "!\n\n" +
+                        "Property: " + property.getName() + "\n" +
+                        "Rent Amount: Php " + String.format("%.2f", rent),
+                        "Rent Payment", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                    
+                    // Check if player can afford rent
+                    if (player.getCash() >= rent) {
+                        // Player pays rent
+                        player.updateCash(-rent);
+                        owner.updateCash(rent);
+                        view.log(player.getName() + " paid Php " + String.format("%.2f", rent) + " rent to " + owner.getName());
+                        view.log(player.getName() + " remaining cash: Php " + String.format("%.2f", player.getCash()));
+                        view.log(owner.getName() + " received rent payment of Php " + String.format("%.2f", rent));
+                        
+                        // Check for level changes for both players
+                        checkAndHandleLevelUp(owner); // Owner might level up from receiving rent
+                    } else {
+                        // Player can't afford rent - bankruptcy
+                        double playerCash = player.getCash();
+                        player.updateCash(-playerCash); // Take all remaining cash
+                        owner.updateCash(playerCash); // Owner gets what player had
+                        view.log(player.getName() + " cannot afford the full rent of Php " + String.format("%.2f", rent));
+                        view.log(player.getName() + " paid all remaining cash (Php " + String.format("%.2f", playerCash) + ") to " + owner.getName());
+                        
+                        // Handle immediate bankruptcy and return properties to market
+                        handlePlayerBankruptcy(player);
+                        
+                        // Remove bankrupt player from the game
+                        int bankruptPlayerIndex = game.players.indexOf(player);
+                        if (bankruptPlayerIndex != -1) {
+                            game.players.remove(bankruptPlayerIndex);
+                            view.log(player.getName() + " has been removed from the game due to bankruptcy.");
+                            
+                            // Adjust current player index if necessary
+                            if (bankruptPlayerIndex < currentPlayerIndex) {
+                                currentPlayerIndex--;
+                            } else if (bankruptPlayerIndex == currentPlayerIndex) {
+                                // Current player went bankrupt, adjust index
+                                if (currentPlayerIndex >= game.players.size()) {
+                                    currentPlayerIndex = 0;
+                                }
+                                // Mark turn as over since current player is gone
+                                turnOver = true;
+                            }
+                            
+                            // Update UI immediately
+                            view.updatePlayerPanel(game.players);
+                            view.updateBoardPanel(game.board, game.players);
+                        }
+                        
+                        // Check for level changes for owner
+                        checkAndHandleLevelUp(owner); // Owner might level up from receiving payment
+                        
+                        javax.swing.JOptionPane.showMessageDialog(view,
+                            player.getName() + " cannot afford the rent!\n" +
+                            "Paid all remaining cash: Php " + String.format("%.2f", playerCash) + "\n" +
+                            player.getName() + " is now bankrupt!\n" +
+                            "All owned properties have been returned to the market.",
+                            "Bankruptcy", javax.swing.JOptionPane.WARNING_MESSAGE);
+                    }
                 }
             } else if (block instanceof SpecialBlock special) {
                 String type = special.type;
@@ -78,6 +176,7 @@ public class MonopolyManilaController {
                         view.log(player.getName() + " has passed the GO block! + Php 2,500");
                         player.updateCash(2500);
                         javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " has passed the GO block! + Php 2,500", "GO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                        checkAndHandleLevelUp(player); // Check for level up after GO bonus
                         break;
                     case "Manila Police District":
                         view.log(player.getName() + " has landed on Manila Police District. You have been arrested! You will be sent to Manila City Jail.");
@@ -102,6 +201,11 @@ public class MonopolyManilaController {
                             view.log(player.getName() + " did not roll a double. You will have to pay Php 5,000 to get out of jail.");
                             javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " did not roll a double. You will have to pay Php 5,000 to get out of jail.", "Jail", javax.swing.JOptionPane.WARNING_MESSAGE);
                             player.updateCash(-5000);
+                            
+                            // Check for immediate bankruptcy after jail payment
+                            if (checkAndHandleImmediateBankruptcy(player)) {
+                                return; // Exit immediately if player went bankrupt and was removed
+                            }
                         }
                         break;
                     case "Manila City Jail":
@@ -124,22 +228,42 @@ public class MonopolyManilaController {
                             view.log(player.getName() + " did not roll a double. You will have to pay Php 5,000 to get out of jail.");
                             javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " did not roll a double. You will have to pay Php 5,000 to get out of jail.", "Jail", javax.swing.JOptionPane.WARNING_MESSAGE);
                             player.updateCash(-5000);
+                            
+                            // Check for immediate bankruptcy after jail payment
+                            if (checkAndHandleImmediateBankruptcy(player)) {
+                                return; // Exit immediately if player went bankrupt and was removed
+                            }
                         }
                         break;
                     case "Meralco":
                         view.log(player.getName() + " has landed on Meralco. You have to pay Php 2,500 for your electric bill.");
                         javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " has landed on Meralco. You have to pay Php 2,500 for your electric bill.", "Meralco", javax.swing.JOptionPane.WARNING_MESSAGE);
                         player.updateCash(-2500);
+                        
+                        // Check for immediate bankruptcy after bill payment
+                        if (checkAndHandleImmediateBankruptcy(player)) {
+                            return; // Exit immediately if player went bankrupt and was removed
+                        }
                         break;
                     case "Maynilad":
                         view.log(player.getName() + " has landed on Maynilad. You have to pay Php 1,000 for your water bill.");
                         javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " has landed on Maynilad. You have to pay Php 1,000 for your water bill.", "Maynilad", javax.swing.JOptionPane.WARNING_MESSAGE);
                         player.updateCash(-1000);
+                        
+                        // Check for immediate bankruptcy after bill payment
+                        if (checkAndHandleImmediateBankruptcy(player)) {
+                            return; // Exit immediately if player went bankrupt and was removed
+                        }
                         break;
                     case "Income Tax":
                         view.log(player.getName() + " has landed on Income Tax. You have to pay Php 7,500 for your income tax.");
                         javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " has landed on Income Tax. You have to pay Php 7,500 for your income tax.", "Income Tax", javax.swing.JOptionPane.WARNING_MESSAGE);
                         player.updateCash(-7500);
+                        
+                        // Check for immediate bankruptcy after tax payment
+                        if (checkAndHandleImmediateBankruptcy(player)) {
+                            return; // Exit immediately if player went bankrupt and was removed
+                        }
                         break;
                     case "Real Property Tax":
                         double totalTax = 0.0;
@@ -236,30 +360,45 @@ public class MonopolyManilaController {
             }
         } while (!turnOver);
 
+        // Update all players' levels at the end of the turn
+        for (Player p : game.players) {
+            checkAndHandleLevelUp(p);
+        }
+
         view.updatePlayerPanel(game.players);
         view.updateBoardPanel(game.board, game.players);
 
-        // Remove bankrupt players (cash < 0)
+        // Remove bankrupt players (cash < 0) and handle their properties
         java.util.List<Player> toRemove = new java.util.ArrayList<>();
         for (Player p : game.players) {
             if (p.getCash() < 0) {
-                view.log(p.getName() + " is bankrupt! You are out of the game.");
+                handlePlayerBankruptcy(p); // Handle bankruptcy and return properties
                 toRemove.add(p);
+                view.log(p.getName() + " has been removed from the game due to bankruptcy.");
             }
         }
+        
+        // Remove bankrupt players from the game
         for (Player p : toRemove) {
             int idx = game.players.indexOf(p);
             if (idx != -1) {
                 game.players.remove(idx);
                 if (idx < currentPlayerIndex) {
                     currentPlayerIndex--;
-                } else if (idx == currentPlayerIndex) {
-                    // If current player goes bankrupt, don't increment index
+                } else if (idx == currentPlayerIndex && currentPlayerIndex >= game.players.size()) {
+                    // If current player goes bankrupt and was the last player, reset index
+                    currentPlayerIndex = 0;
                 }
             }
         }
+        
+        // Update panels after player removal
+        if (!toRemove.isEmpty()) {
+            view.updatePlayerPanel(game.players);
+            view.updateBoardPanel(game.board, game.players);
+        }
 
-        // Win condition: only one player left
+        // Win condition: only one player left or no players left
         if (game.players.size() == 1) {
             Player winner = game.players.get(0);
             String winMsg = "Game over! " + winner.getName() + " has MONOPOLY over the heart of Manila!\n" +
@@ -268,6 +407,23 @@ public class MonopolyManilaController {
             javax.swing.JOptionPane.showMessageDialog(view,
                 winMsg + "\n\nCongratulations, " + winner.getName() + "! You have won the game!",
                 "Game Over - Winner!", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            int playAgain = javax.swing.JOptionPane.showConfirmDialog(view,
+                "Would you like to play again?",
+                "Play Again?",
+                javax.swing.JOptionPane.YES_NO_OPTION,
+                javax.swing.JOptionPane.QUESTION_MESSAGE);
+            if (playAgain == javax.swing.JOptionPane.YES_OPTION) {
+                restartGame();
+            } else {
+                view.setRollDiceEnabled(false);
+            }
+            return;
+        } else if (game.players.isEmpty()) {
+            // Edge case: all players went bankrupt
+            view.log("All players have gone bankrupt! The game ends with no winner.");
+            javax.swing.JOptionPane.showMessageDialog(view,
+                "All players have gone bankrupt!\nThe game ends with no winner.",
+                "Game Over - No Winner!", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             int playAgain = javax.swing.JOptionPane.showConfirmDialog(view,
                 "Would you like to play again?",
                 "Play Again?",
@@ -306,5 +462,88 @@ public class MonopolyManilaController {
 
     public Game getGame() {
         return game;
+    }
+
+    // Helper method to check and handle player level updates
+    private void checkAndHandleLevelUp(Player player) {
+        int oldLevel = player.getPlayerLvl();
+        player.updatePlayerLvl();
+        int newLevel = player.getPlayerLvl();
+        
+        // Notify if player leveled up
+        if (newLevel > oldLevel) {
+            String levelUpMsg = player.getName() + " leveled up to Level " + newLevel + "! ";
+            switch (newLevel) {
+                case 1:
+                    levelUpMsg += "You now get a 5% discount on property purchases!";
+                    break;
+                case 2:
+                    levelUpMsg += "You now get a 10% discount on property purchases!";
+                    break;
+                case 3:
+                    levelUpMsg += "You now get a 25% discount on property purchases!";
+                    break;
+            }
+            view.log(levelUpMsg);
+            javax.swing.JOptionPane.showMessageDialog(view, levelUpMsg, "Level Up!", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    // Helper method to handle player bankruptcy and return properties to market
+    private void handlePlayerBankruptcy(Player bankruptPlayer) {
+        view.log("=== BANKRUPTCY PROCEEDINGS FOR " + bankruptPlayer.getName().toUpperCase() + " ===");
+        
+        // Return all properties owned by bankrupt player to the market
+        java.util.List<PropertyBlock> ownedProperties = new java.util.ArrayList<>(bankruptPlayer.getOwnedProperties());
+        if (ownedProperties.isEmpty()) {
+            view.log(bankruptPlayer.getName() + " owned no properties to return to the market.");
+        } else {
+            view.log("Returning " + ownedProperties.size() + " properties to the market:");
+            for (PropertyBlock property : ownedProperties) {
+                if (property != null) {
+                    property.setOwner(null); // Return property to market
+                    view.log("  • " + property.getName() + " (₱" + String.format("%.2f", property.price) + ") is now available for purchase");
+                }
+            }
+        }
+        
+        bankruptPlayer.getOwnedProperties().clear(); // Clear the player's property list
+        bankruptPlayer.updateNetWorth(); // Update net worth to reflect loss of properties
+        view.log(bankruptPlayer.getName() + " is BANKRUPT! Final cash: ₱" + String.format("%.2f", bankruptPlayer.getCash()));
+        view.log("=== END BANKRUPTCY PROCEEDINGS ===");
+    }
+
+    // Helper method to immediately check and handle bankruptcy during gameplay
+    private boolean checkAndHandleImmediateBankruptcy(Player player) {
+        if (player.getCash() < 0) {
+            handlePlayerBankruptcy(player);
+            
+            // Immediately remove bankrupt player from the game
+            int bankruptPlayerIndex = game.players.indexOf(player);
+            if (bankruptPlayerIndex != -1) {
+                game.players.remove(bankruptPlayerIndex);
+                view.log(player.getName() + " has been removed from the game due to bankruptcy.");
+                
+                // Adjust current player index if necessary
+                if (bankruptPlayerIndex < currentPlayerIndex) {
+                    currentPlayerIndex--;
+                } else if (bankruptPlayerIndex == currentPlayerIndex) {
+                    // Current player went bankrupt, adjust index
+                    if (currentPlayerIndex >= game.players.size()) {
+                        currentPlayerIndex = 0;
+                    }
+                }
+                
+                // Update UI immediately
+                view.updatePlayerPanel(game.players);
+                view.updateBoardPanel(game.board, game.players);
+                
+                // Check if game should end
+                if (game.players.size() <= 1) {
+                    return true; // Signal that game should end
+                }
+            }
+        }
+        return false; // No bankruptcy or game continues
     }
 }

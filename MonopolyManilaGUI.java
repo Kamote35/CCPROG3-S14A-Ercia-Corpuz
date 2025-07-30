@@ -13,6 +13,7 @@ public class MonopolyManilaGUI extends JFrame {
     private JPanel playerPanel;
     private JPanel boardPanel;
     private JLabel[] blockLabels;
+    private JPanel leaderboardPanel;
     private MonopolyManilaController controller;
 
     public MonopolyManilaGUI() {
@@ -71,11 +72,23 @@ public class MonopolyManilaGUI extends JFrame {
         }
         add(boardPanel, BorderLayout.CENTER);
 
+        // Leaderboard panel setup
+        leaderboardPanel = new JPanel();
+        leaderboardPanel.setLayout(new BoxLayout(leaderboardPanel, BoxLayout.Y_AXIS));
+        leaderboardPanel.setBackground(new Color(240, 248, 255));
+        leaderboardPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(new Color(70, 130, 180), 2), "Net Worth Leaderboard", 0, 0, new Font("Arial", Font.BOLD, 14), new Color(70, 130, 180)));
+
         // Move game log to the right
         JScrollPane logScrollPane = new JScrollPane(gameLog);
         logScrollPane.setPreferredSize(new Dimension(300, 600));
         logScrollPane.setBorder(BorderFactory.createTitledBorder("Game Log"));
-        add(logScrollPane, BorderLayout.EAST);
+        
+        // Create a right panel that contains both leaderboard and game log
+        JPanel rightPanel = new JPanel(new BorderLayout(5, 5));
+        rightPanel.add(leaderboardPanel, BorderLayout.NORTH);
+        rightPanel.add(logScrollPane, BorderLayout.CENTER);
+        add(rightPanel, BorderLayout.EAST);
 
         // Initialize controller and show start dialog
         controller = new MonopolyManilaController(this);
@@ -92,6 +105,9 @@ public class MonopolyManilaGUI extends JFrame {
         playerPanel.removeAll();
         playerPanel.revalidate();
         playerPanel.repaint();
+        leaderboardPanel.removeAll();
+        leaderboardPanel.revalidate();
+        leaderboardPanel.repaint();
         rollDiceButton.setEnabled(false);
     }
 
@@ -152,9 +168,57 @@ public class MonopolyManilaGUI extends JFrame {
         rollDiceButton.setEnabled(enabled);
     }
 
+    // Called by controller to update the leaderboard
+    public void updateLeaderboard(java.util.List<Player> players) {
+        // Update net worth for all players before displaying
+        for (Player player : players) {
+            player.updateNetWorth();
+        }
+        
+        // Sort players by net worth in descending order
+        java.util.List<Player> sortedPlayers = new java.util.ArrayList<>(players);
+        sortedPlayers.sort((p1, p2) -> Double.compare(p2.getNetWorth(), p1.getNetWorth()));
+        
+        leaderboardPanel.removeAll();
+        
+        // Add title
+        JLabel titleLabel = new JLabel("🏆 Net Worth Rankings");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setForeground(new Color(70, 130, 180));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 10, 5));
+        leaderboardPanel.add(titleLabel);
+        
+        // Add players in order
+        for (int i = 0; i < sortedPlayers.size(); i++) {
+            Player player = sortedPlayers.get(i);
+            String rank = (i + 1) == 1 ? "1st" : (i + 1) == 2 ? "2nd" : (i + 1) == 3 ? "3rd" : String.valueOf(i + 1);
+            
+            JLabel playerLabel = new JLabel("<html><center>" + rank + " " + player.getName() + 
+                "<br>Net Worth: ₱" + String.format("%.2f", player.getNetWorth()) + "</center></html>");
+            
+            Color bgColor = playerColorMap.getOrDefault(player.getName(), Color.LIGHT_GRAY);
+            playerLabel.setBackground(bgColor);
+            playerLabel.setOpaque(true);
+            playerLabel.setForeground(Color.WHITE);
+            playerLabel.setFont(new Font("Arial", Font.BOLD, 12));
+            playerLabel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.DARK_GRAY, 1),
+                BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+            playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            
+            leaderboardPanel.add(playerLabel);
+            leaderboardPanel.add(Box.createVerticalStrut(5)); // Add spacing between entries
+        }
+        
+        leaderboardPanel.revalidate();
+        leaderboardPanel.repaint();
+    }
+
     // Called by controller to update player info panel
     public void updatePlayerPanel(java.util.List<Player> players) {
         updatePlayerPanel(players, java.util.Collections.emptyList());
+        updateLeaderboard(players); // Update leaderboard whenever player panel updates
     }
 
     // Overloaded to support showing bankrupt players
@@ -196,6 +260,9 @@ public class MonopolyManilaGUI extends JFrame {
         }
         playerPanel.revalidate();
         playerPanel.repaint();
+        
+        // Update leaderboard with active players
+        updateLeaderboard(activePlayers);
     }
 
     // Called by controller to log messages

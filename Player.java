@@ -144,4 +144,11 @@ public class Player {
 
 }
 
+    public String getDiscounts() {
+        if (playerLvl > 0) {
+            return (int)(getDiscountRate() * 100) + "%";
+        }
+        return "";
+    }
+
 }
