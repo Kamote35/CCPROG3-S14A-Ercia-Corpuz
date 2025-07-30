@@ -15,6 +15,7 @@ public abstract class Block {
 
 
     /** 
+     * Abstract method to be implemented by subclasses.
      * @param player
      * @param game
      * @param getName(
@@ -22,12 +23,17 @@ public abstract class Block {
     public abstract void landedOn (Player player, Game game, Scanner scanner);
 
     /** 
+     * Returns the name of the block.
      * @return String
      */
     public String getName() {
         return this.name;
     }
-
+    
+    /** 
+     * Returns the block number.
+     * @return int
+     */
     public int getBlockNumber() {
         return this.blockNumber;
     }

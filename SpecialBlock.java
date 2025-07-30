@@ -13,6 +13,7 @@ public class SpecialBlock extends Block {
     }
 
     /** 
+     * Handles the special mechanics for the special blocks.
      * @param player
      * @param game
      * @param scanner
@@ -110,6 +111,7 @@ public class SpecialBlock extends Block {
 
 
     /** 
+     * Handles the special mechanics for the Manila City Jail block.
      * @param player
      * @param game
      * @param scanner
@@ -151,6 +153,7 @@ public class SpecialBlock extends Block {
     }
 
     /** 
+     * Calculates the total real property tax for the player based on their owned properties.
      * @param player
      * @return double
      */
@@ -167,6 +170,7 @@ public class SpecialBlock extends Block {
     }
 
     /** 
+     * For chance block mechanic, gives the next free property to the player.
      * @param player
      * @param game
      */
@@ -195,7 +199,12 @@ public class SpecialBlock extends Block {
         
     }
 
-
+    /** 
+     * Checks the next available rail station for the current player and transports them there.
+     * @param currentPlayer
+     * @param game
+     * @param type
+     */
     private void checkNextAvailableRailStation(Player currentPlayer, Game game, String type) {
         // This method checks the next available rail station.
         System.out.println("Checking next available rail station...");

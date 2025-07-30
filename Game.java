@@ -20,7 +20,10 @@ public class Game {
         scanner = new Scanner(System.in); // Initialized scanner
         initializeBoard();
     }
-
+    
+    /** 
+     * Initializes the game board with various blocks
+     */
     private void initializeBoard() {
         // Block 1 - Block 5
         board.add(new SpecialBlock("GO", 1, "GO"));
@@ -79,6 +82,9 @@ public class Game {
         board.add(new PropertyBlock("Cultural Manila (Ermita)", "United Nations Avenue", 40, 17500.00, 2125.00));
     }    
 
+    /** 
+     * Starts the main game
+     */
     public void start() {
 
         int num;
@@ -245,6 +251,7 @@ public class Game {
     }
 
     /** 
+     * for Dice rolling Mechanic
      * @return int
      */
     public int rollDice() {

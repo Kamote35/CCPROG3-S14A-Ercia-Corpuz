@@ -90,6 +90,7 @@ public class PropertyBlock extends Block{
 
 
     /** 
+     * Sets the owner of the property.
      * @param owner
      */
     public void setOwner(Player owner) {
@@ -106,6 +107,7 @@ public class PropertyBlock extends Block{
     }
 
     /** 
+     * Returns the owner of the property.
      * @return Player
      */
     public Player getOwner () {
