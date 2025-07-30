@@ -135,21 +135,20 @@ public class Player {
 
 
     public void updatePlayerLvl() {
-    updateNetWorth(); // always update first
-    double worth = this.netWorth;
-
-        if (worth >= 125000.00) { // level 3 needs 1,250,000.00 net worth
+        updateNetWorth(); // always update first
+        double worth = this.netWorth;
+        // Only increase level, never decrease
+        if (worth >= 125000.00 && this.playerLvl < 3) {
             this.playerLvl = 3;
             System.out.println(this.name + " is now Level 3! Enjoy a 25% discount on property purchases.");
-        } else if (worth >= 100000.00) { // level 2 needs 600,000.00 net worth
+        } else if (worth >= 100000.00 && this.playerLvl < 2) {
             this.playerLvl = 2;
             System.out.println(this.name + " is now Level 2! Enjoy a 10% discount on property purchases.");
-        } else if (worth >= 75000.00) { // level 1 needs 250,000.00 net worth
+        } else if (worth >= 75000.00 && this.playerLvl < 1) {
             this.playerLvl = 1;
             System.out.println(this.name + " is now Level 1! Enjoy a 5% discount on property purchases.");
-        } else {
-            this.playerLvl = 0;
         }
+        // If worth drops, do not decrease level
     }
     public void updateNetWorth() {
         this.netWorth = this.cash;
