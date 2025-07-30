@@ -96,10 +96,15 @@ public class PropertyBlock extends Block{
         this.Owner = owner;
     }
 
+
+    /** 
+     *  Sets the property to public, used when a player goes bankrupt
+     */
     public void goPublic() {
         this.Owner = null; // sets the owner to null, making the property public
         System.out.println(this.name + " @ block number: " + this.getBlockNumber() +" is now public and can be bought by any player.");
     }
+
     /** 
      * @return Player
      */
