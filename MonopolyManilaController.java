@@ -1,5 +1,6 @@
 
 import java.util.List;
+import java.util.Scanner;
 
 public class MonopolyManilaController {
     private MonopolyManilaGUI view;
@@ -37,11 +38,13 @@ public class MonopolyManilaController {
         int doubleCount = 0;
         boolean turnOver = false;
         do {
-            int d1 = game.rollDice();
-            int d2 = game.rollDice();
-            int move = d1 + d2;
+            System.out.println("Input position: ");
+            Scanner scanner = new Scanner(System.in);
+            int d1 = scanner.nextInt();
+            int d2 = d1;
+            int move = d1;
             view.log(player.getName() + " rolled " + d1 + " and " + d2 + " (move: " + move + ")");
-            int newPos = (player.getPositionBlock() + move) % game.board.size();
+            int newPos = (move) % game.board.size();
             if (newPos == 0) newPos = game.board.size();
             player.updatePositionBlock(newPos);
             Block block = game.board.get(newPos - 1);
@@ -345,17 +348,17 @@ public class MonopolyManilaController {
 
             // Speeding rule: 3 consecutive doubles
             if (d1 == d2) {
-                doubleCount++;
-                if (doubleCount == 3) {
-                    view.log(player.getName() + " rolled a double three times in a row! Go to Jail for Speeding!");
-                    javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " rolled a double three times in a row! Go to Jail for Speeding!", "Speeding", javax.swing.JOptionPane.WARNING_MESSAGE);
-                    player.updatePositionBlock(11); // Jail
-                    turnOver = true;
-                } else {
-                    view.log(player.getName() + " rolled a double! Roll again.");
-                    javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " rolled a double! Roll again.", "Double!", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                }
-            } else {
+            //     doubleCount++;
+            //     if (doubleCount == 3) {
+            //         view.log(player.getName() + " rolled a double three times in a row! Go to Jail for Speeding!");
+            //         javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " rolled a double three times in a row! Go to Jail for Speeding!", "Speeding", javax.swing.JOptionPane.WARNING_MESSAGE);
+            //         player.updatePositionBlock(11); // Jail
+            //         turnOver = true;
+            //     } else {
+            //         view.log(player.getName() + " rolled a double! Roll again.");
+            //         javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " rolled a double! Roll again.", "Double!", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            //     }
+            // } else {
                 turnOver = true;
             }
         } while (!turnOver);
