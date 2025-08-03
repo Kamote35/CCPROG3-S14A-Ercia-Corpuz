@@ -287,24 +287,12 @@ public class MonopolyManilaController {
                     case "MRT3":
                     case "PNR":
                         view.log(player.getName() + " has landed on " + type + ". Checking next available rail station...");
-                        java.util.List<Integer> railIdxs = new java.util.ArrayList<>();
-                        String[] rails = {"LRT1", "PNR", "LRT2", "MRT3"};
-                        for (int i = 0; i < game.board.size(); i++) {
-                            Block b = game.board.get(i);
-                            if (b instanceof SpecialBlock sb && java.util.Arrays.asList(rails).contains(sb.type) && !b.getName().equals(type)) {
-                                railIdxs.add(i);
-                            }
-                        }
-                        if (railIdxs.isEmpty()) {
-                            view.log("All rail stations are closed.");
-                            javax.swing.JOptionPane.showMessageDialog(view, "All rail stations are closed.", "Railroad", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                        if (player.getPositionBlock() == 36) {
+                            player.updatePositionBlock(6);
                         } else {
-                            int randIdx = railIdxs.get(new java.util.Random().nextInt(railIdxs.size()));
-                            player.updatePositionBlock(randIdx + 1);
-                            Block dest = game.board.get(randIdx);
-                            view.log("Arriving in " + dest.getName() + " station.");
-                            javax.swing.JOptionPane.showMessageDialog(view, "Arriving in " + dest.getName() + " station.", "Railroad", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                            player.updatePositionBlock(player.getPositionBlock()+10);
                         }
+                        
                         break;
                     case "Chance":
                         int rand = new java.util.Random().nextInt(3);
