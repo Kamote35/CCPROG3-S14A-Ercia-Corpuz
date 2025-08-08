@@ -28,13 +28,13 @@ public class MonopolyManilaGUI extends JFrame {
         startMenuPanel = new JPanel();
         startMenuPanel.setLayout(new BoxLayout(startMenuPanel, BoxLayout.Y_AXIS));
         startMenuPanel.setBackground(new Color(245, 245, 220));
-        JLabel title = new JLabel("Monopoly Manila");
+        JLabel title = new JLabel("Monopoly Manila"); // TItle
         title.setFont(new Font("Arial", Font.BOLD, 36));
         title.setAlignmentX(CENTER_ALIGNMENT);
-        JLabel subtitle = new JLabel("A Filipino Monopoly Experience");
+        JLabel subtitle = new JLabel("A Filipino Monopoly Experience"); // Subtitle
         subtitle.setFont(new Font("Arial", Font.ITALIC, 18));
         subtitle.setAlignmentX(CENTER_ALIGNMENT);
-        JButton startButton = new JButton("Start Game");
+        JButton startButton = new JButton("Start Game"); // Button to start the game
         startButton.setFont(new Font("Arial", Font.BOLD, 24));
         startButton.setBackground(new Color(34, 139, 34));
         startButton.setForeground(Color.WHITE);
@@ -45,7 +45,7 @@ public class MonopolyManilaGUI extends JFrame {
             mainLayout.show(mainPanel, "game");
             controller.showStartDialog();
         });
-        startMenuPanel.add(Box.createVerticalGlue());
+        startMenuPanel.add(Box.createVerticalGlue()); // automatically adjusts the start menu to center when resized
         startMenuPanel.add(title);
         startMenuPanel.add(Box.createVerticalStrut(10));
         startMenuPanel.add(subtitle);
@@ -54,7 +54,7 @@ public class MonopolyManilaGUI extends JFrame {
         startMenuPanel.add(Box.createVerticalGlue());
 
         // --- Main Game Panel ---
-        JPanel gamePanel = new JPanel(new BorderLayout(10, 10));
+        JPanel gamePanel = new JPanel(new BorderLayout(10, 10)); /// allocates space allowance in the gui, makes the sections of the gui not appear crowded
         gamePanel.setBackground(new Color(245, 245, 220));
 
         // Menu bar for restart
@@ -70,11 +70,13 @@ public class MonopolyManilaGUI extends JFrame {
         setSize(1100, 800);
         setLocationRelativeTo(null);
 
+        // Log for game events that may be useful for the player
         gameLog = new JTextArea();
         gameLog.setEditable(false);
         gameLog.setFont(new Font("Consolas", Font.PLAIN, 14));
         gameLog.setBackground(new Color(255, 255, 240));
 
+        // Button for Dice rollinng mechanic
         rollDiceButton = new JButton("Roll Dice");
         rollDiceButton.setEnabled(false);
         rollDiceButton.setFont(new Font("Arial", Font.BOLD, 18));
@@ -94,15 +96,15 @@ public class MonopolyManilaGUI extends JFrame {
         gamePanel.add(playerPanel, BorderLayout.NORTH);
 
         // --- Monopoly Board Layout ---
-        boardPanel = new JPanel(new GridBagLayout());
+        boardPanel = new JPanel(new GridBagLayout()); // creates the Grid that will serve as the template of the blocks GUI
         boardPanel.setBackground(new Color(222, 184, 135));
         boardPanel.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(139, 69, 19), 3), "Manila Board", 0, 0, new Font("Arial", Font.BOLD, 18), new Color(139, 69, 19)));
         // Set a fixed preferred size for the board panel to prevent clipping
         boardPanel.setPreferredSize(new Dimension(600, 600));
-        blockLabels = new JLabel[40];
+        blockLabels = new JLabel[40]; // array to handle the blocks that make up the board
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(1, 1, 1, 1);
+        gbc.insets = new Insets(1, 1, 1, 1); // sets the spacing in between blocks
         // Place 40 blocks around a square (11 per side, corners shared)
         int[][] positions = new int[40][2];
         for (int i = 0; i < 11; i++) positions[i] = new int[]{0, i}; // Top row
@@ -124,7 +126,7 @@ public class MonopolyManilaGUI extends JFrame {
             new Color(169, 169, 169) // Gray (utilities, railroads, etc)
         };
         // Example mapping: block index to group color (customize as needed)
-        int[] groupMap = {
+        int[] groupMap = { // array that assigns color to blocks, starts from GO then proceed counter-clockwise
             8,8,0,0,9,1,1,9,1,1,9, // 0-10
             2,9,2,2,9,2,2,9,3,9,   // 11-20
             3,3,9,4,4,9,4,4,9,5,   // 21-30
