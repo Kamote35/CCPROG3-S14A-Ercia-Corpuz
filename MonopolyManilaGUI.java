@@ -132,7 +132,7 @@ public class MonopolyManilaGUI extends JFrame {
             3,3,9,4,4,9,4,4,9,5,   // 21-30
             5,5,9,6,6,9,7,7,9,8    // 31-39
         };
-        int[] cornerIdx = {0, 10, 20, 30};
+        int[] cornerIdx = {0, 10, 20, 30}; // Indices of corner blocks, the formatting of the corner blocks take priority than the one in the groupmap
         for (int i = 0; i < 40; i++) {
             blockLabels[i] = new JLabel("", SwingConstants.CENTER);
             blockLabels[i].setOpaque(true);
@@ -163,10 +163,10 @@ public class MonopolyManilaGUI extends JFrame {
         center.setBackground(new Color(245, 245, 220));
         center.setOpaque(true);
         center.setPreferredSize(new Dimension(432, 432));
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.gridwidth = 9;
-        gbc.gridheight = 9;
+        gbc.gridx = 1; // the gbc.methods() basically positions the 
+        gbc.gridy = 1; // Monopoly Manila Logo
+        gbc.gridwidth = 9; // at the center of
+        gbc.gridheight = 9; // the game board
         boardPanel.add(center, gbc);
         gamePanel.add(boardPanel, BorderLayout.CENTER);
 
@@ -307,7 +307,7 @@ public class MonopolyManilaGUI extends JFrame {
                 default: rank = (i + 1) + "th";
             }
             JLabel playerLabel = new JLabel("<html><center>" + rank + " " + player.getName() + 
-                "<br>Net Worth: ₱" + String.format("%.2f", player.getNetWorth()) + "</center></html>");
+                "<br>Net Worth: ₱" + String.format("%.2f", player.getNetWorth()) + "</center></html>"); // use HTML formatting to properly center text and also to support Unicode characters
             Color bgColor = playerColorMap.getOrDefault(player.getName(), Color.LIGHT_GRAY);
             playerLabel.setBackground(bgColor);
             playerLabel.setOpaque(true);
