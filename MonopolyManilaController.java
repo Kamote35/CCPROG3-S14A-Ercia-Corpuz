@@ -1,54 +1,56 @@
-
 import java.util.List;
 
+// Controller class for the Monopoly Manila game, handling game logic and communication between the GUI (view) and the game model.
 public class MonopolyManilaController {
-    private MonopolyManilaGUI view;
-    private Game game;
-    private int currentPlayerIndex = 0;
-    private boolean gameStarted = false;
+    private MonopolyManilaGUI view; // Reference to the GUI/view
+    private Game game; // The game model containing players and board
+    private int currentPlayerIndex = 0; // Index of the current player whose turn it is
+    private boolean gameStarted = false; // Flag to indicate if the game has started
 
     // Called by GUI to show the start dialog (for MVC consistency)
     public void showStartDialog() {
         view.showStartDialog();
     }
 
+    // Constructor: initializes the controller with a reference to the GUI/view
     public MonopolyManilaController(MonopolyManilaGUI view) {
         this.view = view;
     }
 
     public void startGame(List<String> playerNames) {
-        game = new Game();
-        game.players.clear();
+        game = new Game(); // Create a new game instance
+        game.players.clear(); // Clear any existing players
         for (String name : playerNames) {
-            game.players.add(new Player(name));
+            game.players.add(new Player(name)); // Add each player to the game
         }
-        currentPlayerIndex = 0;
-        gameStarted = true;
-        view.updatePlayerPanel(game.players);
-        view.updateBoardPanel(game.board, game.players);
-        view.log("Game started with players: " + String.join(", ", playerNames));
-        view.setRollDiceEnabled(true);
-        nextTurn();
+        currentPlayerIndex = 0; // Reset to first player
+        gameStarted = true; // Mark game as started
+        view.updatePlayerPanel(game.players); // Update player info in GUI
+        view.updateBoardPanel(game.board, game.players); // Update board in GUI
+        view.log("Game started with players: " + String.join(", ", playerNames)); // Log start
+        view.setRollDiceEnabled(true); // Enable roll dice button
+        nextTurn(); // Start the first turn
     }
 
     public void handleRollDice() {
-        if (!gameStarted || game.players.isEmpty()) return;
-        Player player = game.players.get(currentPlayerIndex);
-        int doubleCount = 0;
-        boolean turnOver = false;
+        if (!gameStarted || game.players.isEmpty()) return; // Do nothing if game not started or no players
+        Player player = game.players.get(currentPlayerIndex); // Get current player
+        int doubleCount = 0; // Counter for consecutive doubles
+        boolean turnOver = false; // Flag to end turn
         do {
-            int d1 = game.rollDice();
-            int d2 = game.rollDice();
-            int move = d1 + d2;
+            int d1 = game.rollDice(); // Roll first die
+            int d2 = game.rollDice(); // Roll second die
+            int move = d1 + d2; // Total move
             view.log(player.getName() + " rolled " + d1 + " and " + d2 + " (move: " + move + ")");
-            int newPos = (player.getPositionBlock() + move) % game.board.size();
-            if (newPos == 0) newPos = game.board.size();
-            player.updatePositionBlock(newPos);
-            Block block = game.board.get(newPos - 1);
+            int newPos = (player.getPositionBlock() + move) % game.board.size(); // Calculate new position
+            if (newPos == 0) newPos = game.board.size(); // Wrap around board
+            player.updatePositionBlock(newPos); // Update player position
+            Block block = game.board.get(newPos - 1); // Get block landed on
             view.log(player.getName() + " landed on block " + newPos + ": " + block.getName());
 
             // Property and special block handling
             if (block instanceof PropertyBlock property) {
+                // If property is unowned, offer to buy (with discount if applicable)
                 if (property.getOwner() == null) {
                     // Calculate discounted price
                     double originalPrice = property.price;
@@ -62,6 +64,7 @@ public class MonopolyManilaController {
                                      "\nDiscounted Price: Php " + String.format("%.2f", discountedPrice);
                     }
                     
+                    // Show a dialog asking the player if they want to buy the property (with discount info if applicable).
                     int option = javax.swing.JOptionPane.showConfirmDialog(view,
                             player.getName() + " (Level " + player.getPlayerLvl() + "), do you want to buy this property?\n\n" +
                             property.getName() + discountText +
@@ -99,7 +102,7 @@ public class MonopolyManilaController {
                     view.log(player.getName() + " landed on their own property: " + property.getName());
                     view.log("You can collect rent from other players who land here!");
                 } else if (property.getOwner() != player) {
-                    // Handle rent payment
+                    // Handle rent payment to another player
                     Player owner = property.getOwner();
                     double rent = property.rentprice;
                     
@@ -170,15 +173,18 @@ public class MonopolyManilaController {
                     }
                 }
             } else if (block instanceof SpecialBlock special) {
+                // Handle special blocks (GO, Jail, Utilities, Taxes, Railroads, Chance, Free Parking)
                 String type = special.type;
                 switch (type) {
                     case "GO":
+                        // Player passes GO, collect bonus
                         view.log(player.getName() + " has passed the GO block! + Php 2,500");
                         player.updateCash(2500);
                         javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " has passed the GO block! + Php 2,500", "GO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
                         checkAndHandleLevelUp(player); // Check for level up after GO bonus
                         break;
                     case "Manila Police District":
+                        // Player goes to jail
                         view.log(player.getName() + " has landed on Manila Police District. You have been arrested! You will be sent to Manila City Jail.");
                         javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " has landed on Manila Police District. You have been arrested! You will be sent to Manila City Jail.", "Police District", javax.swing.JOptionPane.WARNING_MESSAGE);
                         player.updatePositionBlock(11);
@@ -209,6 +215,7 @@ public class MonopolyManilaController {
                         }
                         break;
                     case "Manila City Jail":
+                        // Player is in jail, try to roll doubles to get out
                         view.log(player.getName() + " has landed on Manila City Jail. Roll the dice thrice, if you roll a double, you can get out of jail. If not, pay Php 5,000.");
                         jailTries = 0;
                         freed = false;
@@ -236,6 +243,7 @@ public class MonopolyManilaController {
                         }
                         break;
                     case "Meralco":
+                        // Player pays electric bill
                         view.log(player.getName() + " has landed on Meralco. You have to pay Php 2,500 for your electric bill.");
                         javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " has landed on Meralco. You have to pay Php 2,500 for your electric bill.", "Meralco", javax.swing.JOptionPane.WARNING_MESSAGE);
                         player.updateCash(-2500);
@@ -246,6 +254,7 @@ public class MonopolyManilaController {
                         }
                         break;
                     case "Maynilad":
+                        // Player pays water bill
                         view.log(player.getName() + " has landed on Maynilad. You have to pay Php 1,000 for your water bill.");
                         javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " has landed on Maynilad. You have to pay Php 1,000 for your water bill.", "Maynilad", javax.swing.JOptionPane.WARNING_MESSAGE);
                         player.updateCash(-1000);
@@ -256,6 +265,7 @@ public class MonopolyManilaController {
                         }
                         break;
                     case "Income Tax":
+                        // Player pays income tax
                         view.log(player.getName() + " has landed on Income Tax. You have to pay Php 7,500 for your income tax.");
                         javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " has landed on Income Tax. You have to pay Php 7,500 for your income tax.", "Income Tax", javax.swing.JOptionPane.WARNING_MESSAGE);
                         player.updateCash(-7500);
@@ -266,6 +276,7 @@ public class MonopolyManilaController {
                         }
                         break;
                     case "Real Property Tax":
+                        // Player pays property tax based on owned properties
                         double totalTax = 0.0;
                         for (PropertyBlock prop : player.getOwnedProperties()) {
                             if (prop != null) totalTax += prop.price * 0.05;
@@ -275,6 +286,7 @@ public class MonopolyManilaController {
                         player.updateCash(-totalTax);
                         break;
                     case "Internal Revenue Allotment":
+                        // Player receives bonus
                         view.log(player.getName() + " has landed on Internal Revenue Allotment. You have earned Php 5,000.");
                         javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " has landed on Internal Revenue Allotment. You have earned Php 5,000.", "IRA", javax.swing.JOptionPane.INFORMATION_MESSAGE);
                         player.updateCash(5000);
@@ -283,6 +295,7 @@ public class MonopolyManilaController {
                     case "LRT2":
                     case "MRT3":
                     case "PNR":
+                        // Player moves to another random rail station
                         view.log(player.getName() + " has landed on " + type + ". Checking next available rail station...");
                         java.util.List<Integer> railIdxs = new java.util.ArrayList<>();
                         String[] rails = {"LRT1", "PNR", "LRT2", "MRT3"};
@@ -304,6 +317,7 @@ public class MonopolyManilaController {
                         }
                         break;
                     case "Chance":
+                        // Player draws a random chance card (bonus, free property, or penalty)
                         int rand = new java.util.Random().nextInt(3);
                         if (rand == 0) {
                             view.log(player.getName() + " has landed on Chance! You have been given Php 20,000.");
@@ -337,13 +351,14 @@ public class MonopolyManilaController {
                         }
                         break;
                     case "Free Parking":
+                        // Player rests for a turn
                         view.log(player.getName() + " has landed on Free Parking! You can rest here for a turn.");
                         javax.swing.JOptionPane.showMessageDialog(view, player.getName() + " has landed on Free Parking! You can rest here for a turn.", "Free Parking", javax.swing.JOptionPane.INFORMATION_MESSAGE);
                         break;
                 }
             }
 
-            // Speeding rule: 3 consecutive doubles
+            // Speeding rule: 3 consecutive doubles sends player to jail
             if (d1 == d2) {
                 doubleCount++;
                 if (doubleCount == 3) {
@@ -365,8 +380,8 @@ public class MonopolyManilaController {
             checkAndHandleLevelUp(p);
         }
 
-        view.updatePlayerPanel(game.players);
-        view.updateBoardPanel(game.board, game.players);
+        view.updatePlayerPanel(game.players); // Update player info in GUI
+        view.updateBoardPanel(game.board, game.players); // Update board in GUI
 
         // Remove bankrupt players (cash < 0) and handle their properties
         java.util.List<Player> toRemove = new java.util.ArrayList<>();
@@ -445,6 +460,7 @@ public class MonopolyManilaController {
         nextTurn();
     }
 
+    // Advances to the next player's turn and logs it
     public void nextTurn() {
         if (game.players.isEmpty()) return;
         if (currentPlayerIndex >= game.players.size()) currentPlayerIndex = 0;
@@ -452,6 +468,7 @@ public class MonopolyManilaController {
         view.log("It's " + player.getName() + "'s turn!");
     }
 
+    // Restarts the game, resets state, and prompts for new game
     public void restartGame() {
         gameStarted = false;
         currentPlayerIndex = 0;
@@ -460,6 +477,7 @@ public class MonopolyManilaController {
         showStartDialog();
     }
 
+    // Returns the current game instance
     public Game getGame() {
         return game;
     }
